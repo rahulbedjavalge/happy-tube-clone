@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LikedRouteImport } from './routes/liked'
+import { Route as ResultsRouteImport } from './routes/results'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
+import { Route as ChannelHandleRouteImport } from './routes/channel.$handle'
+import { Route as WatchIdRouteImport } from './routes/watch.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LikedRoute = LikedRouteImport.update({
+  id: '/liked',
+  path: '/liked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelHandleRoute = ChannelHandleRouteImport.update({
+  id: '/channel/$handle',
+  path: '/channel/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchIdRoute = WatchIdRouteImport.update({
+  id: '/watch/$id',
+  path: '/watch/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
+  '/results': typeof ResultsRoute
+  '/studio': typeof StudioRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/channel/$handle': typeof ChannelHandleRoute
+  '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
+  '/results': typeof ResultsRoute
+  '/studio': typeof StudioRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/channel/$handle': typeof ChannelHandleRoute
+  '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
+  '/results': typeof ResultsRoute
+  '/studio': typeof StudioRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/channel/$handle': typeof ChannelHandleRoute
+  '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/liked'
+    | '/results'
+    | '/studio'
+    | '/subscriptions'
+    | '/channel/$handle'
+    | '/watch/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/liked'
+    | '/results'
+    | '/studio'
+    | '/subscriptions'
+    | '/channel/$handle'
+    | '/watch/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/liked'
+    | '/results'
+    | '/studio'
+    | '/subscriptions'
+    | '/channel/$handle'
+    | '/watch/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  HistoryRoute: typeof HistoryRoute
+  LikedRoute: typeof LikedRoute
+  ResultsRoute: typeof ResultsRoute
+  StudioRoute: typeof StudioRoute
+  SubscriptionsRoute: typeof SubscriptionsRoute
+  ChannelHandleRoute: typeof ChannelHandleRoute
+  WatchIdRoute: typeof WatchIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/liked': {
+      id: '/liked'
+      path: '/liked'
+      fullPath: '/liked'
+      preLoaderRoute: typeof LikedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channel/$handle': {
+      id: '/channel/$handle'
+      path: '/channel/$handle'
+      fullPath: '/channel/$handle'
+      preLoaderRoute: typeof ChannelHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watch/$id': {
+      id: '/watch/$id'
+      path: '/watch/$id'
+      fullPath: '/watch/$id'
+      preLoaderRoute: typeof WatchIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  HistoryRoute: HistoryRoute,
+  LikedRoute: LikedRoute,
+  ResultsRoute: ResultsRoute,
+  StudioRoute: StudioRoute,
+  SubscriptionsRoute: SubscriptionsRoute,
+  ChannelHandleRoute: ChannelHandleRoute,
+  WatchIdRoute: WatchIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
