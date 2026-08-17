@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResultsRouteImport } from './routes/results'
 import { Route as ChannelHandleRouteImport } from './routes/channel.$handle'
 import { Route as WatchIdRouteImport } from './routes/watch.$id'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChannelHandleRoute = ChannelHandleRouteImport.update({
@@ -38,12 +44,14 @@ const WatchIdRoute = WatchIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
@@ -51,20 +59,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/channel/$handle' | '/watch/$id'
+  fullPaths: '/' | '/auth' | '/results' | '/channel/$handle' | '/watch/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/channel/$handle' | '/watch/$id'
-  id: '__root__' | '/' | '/auth' | '/channel/$handle' | '/watch/$id'
+  to: '/' | '/auth' | '/results' | '/channel/$handle' | '/watch/$id'
+  id:
+    '__root__' | '/' | '/auth' | '/results' | '/channel/$handle' | '/watch/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ResultsRoute: typeof ResultsRoute
   ChannelHandleRoute: typeof ChannelHandleRoute
   WatchIdRoute: typeof WatchIdRoute
 }
@@ -83,6 +94,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/channel/$handle': {
@@ -105,6 +123,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ResultsRoute: ResultsRoute,
   ChannelHandleRoute: ChannelHandleRoute,
   WatchIdRoute: WatchIdRoute,
 }
