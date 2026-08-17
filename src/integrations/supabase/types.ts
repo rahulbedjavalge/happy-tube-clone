@@ -14,13 +14,236 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          video_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          video_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          banner_url: string | null
+          created_at: string
+          description: string | null
+          display_name: string
+          handle: string
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_name: string
+          handle: string
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          handle?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          channel_id: string
+          created_at: string
+          id: string
+          subscriber_id: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          id?: string
+          subscriber_id: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          id?: string
+          subscriber_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_likes: {
+        Row: {
+          created_at: string
+          user_id: string
+          value: number
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+          value: number
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+          value?: number
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_likes_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      videos: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          duration_seconds: number
+          id: string
+          is_public: boolean
+          owner_id: string
+          thumbnail_url: string | null
+          title: string
+          video_url: string
+          views: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration_seconds?: number
+          id?: string
+          is_public?: boolean
+          owner_id: string
+          thumbnail_url?: string | null
+          title: string
+          video_url: string
+          views?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration_seconds?: number
+          id?: string
+          is_public?: boolean
+          owner_id?: string
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watch_history: {
+        Row: {
+          user_id: string
+          video_id: string
+          watched_at: string
+        }
+        Insert: {
+          user_id: string
+          video_id: string
+          watched_at?: string
+        }
+        Update: {
+          user_id?: string
+          video_id?: string
+          watched_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watch_history_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_video_views: { Args: { _video_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
