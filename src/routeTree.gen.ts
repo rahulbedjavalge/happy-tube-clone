@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LikedRouteImport } from './routes/liked'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as ChannelHandleRouteImport } from './routes/channel.$handle'
 import { Route as WatchIdRouteImport } from './routes/watch.$id'
@@ -29,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LikedRoute = LikedRouteImport.update({
+  id: '/liked',
+  path: '/liked',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/history': typeof HistoryRoute
+  '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
   '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
@@ -75,15 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/history' | '/results' | '/channel/$handle' | '/watch/$id'
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/liked'
+    | '/results'
+    | '/channel/$handle'
+    | '/watch/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/auth' | '/history' | '/results' | '/channel/$handle' | '/watch/$id'
+    | '/'
+    | '/auth'
+    | '/history'
+    | '/liked'
+    | '/results'
+    | '/channel/$handle'
+    | '/watch/$id'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/history'
+    | '/liked'
     | '/results'
     | '/channel/$handle'
     | '/watch/$id'
@@ -93,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   HistoryRoute: typeof HistoryRoute
+  LikedRoute: typeof LikedRoute
   ResultsRoute: typeof ResultsRoute
   ChannelHandleRoute: typeof ChannelHandleRoute
   WatchIdRoute: typeof WatchIdRoute
@@ -119,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/liked': {
+      id: '/liked'
+      path: '/liked'
+      fullPath: '/liked'
+      preLoaderRoute: typeof LikedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -149,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   HistoryRoute: HistoryRoute,
+  LikedRoute: LikedRoute,
   ResultsRoute: ResultsRoute,
   ChannelHandleRoute: ChannelHandleRoute,
   WatchIdRoute: WatchIdRoute,
