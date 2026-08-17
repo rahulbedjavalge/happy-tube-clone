@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ChannelHandleRouteImport } from './routes/channel.$handle'
 import { Route as WatchIdRouteImport } from './routes/watch.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChannelHandleRoute = ChannelHandleRouteImport.update({
+  id: '/channel/$handle',
+  path: '/channel/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WatchIdRoute = WatchIdRouteImport.update({
   id: '/watch/$id',
   path: '/watch/$id',
@@ -32,30 +38,34 @@ const WatchIdRoute = WatchIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channel/$handle': typeof ChannelHandleRoute
   '/watch/$id': typeof WatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/watch/$id'
+  fullPaths: '/' | '/auth' | '/channel/$handle' | '/watch/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/watch/$id'
-  id: '__root__' | '/' | '/auth' | '/watch/$id'
+  to: '/' | '/auth' | '/channel/$handle' | '/watch/$id'
+  id: '__root__' | '/' | '/auth' | '/channel/$handle' | '/watch/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ChannelHandleRoute: typeof ChannelHandleRoute
   WatchIdRoute: typeof WatchIdRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/channel/$handle': {
+      id: '/channel/$handle'
+      path: '/channel/$handle'
+      fullPath: '/channel/$handle'
+      preLoaderRoute: typeof ChannelHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/watch/$id': {
       id: '/watch/$id'
       path: '/watch/$id'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ChannelHandleRoute: ChannelHandleRoute,
   WatchIdRoute: WatchIdRoute,
 }
 export const routeTree = rootRouteImport
