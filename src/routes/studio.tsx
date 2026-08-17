@@ -109,8 +109,8 @@ function Studio() {
   const profileMutation = useMutation({
     mutationFn: () =>
       updateProfile(user!.id, {
-        display_name: channelName || profile?.display_name,
-        description: channelBio || profile?.description,
+        display_name: channelName || profile?.display_name || "Channel",
+        description: channelBio || profile?.description || null,
       }),
     onSuccess: () => {
       toast.success("Channel updated");
