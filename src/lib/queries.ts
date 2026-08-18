@@ -10,6 +10,8 @@ export type Channel = {
   banner_url: string | null;
   description: string | null;
   links?: ChannelLink[] | null;
+  country?: string | null;
+  age_range?: string | null;
   created_at?: string;
 };
 
@@ -215,6 +217,16 @@ export async function setLike(videoId: string, userId: string, value: number) {
 
 export async function recordView(videoId: string) {
   await supabase.rpc("increment_video_views", { _video_id: videoId });
+}
+
+export async function fetchWatchSeconds(videoId: string, userId: string): Promise<number> {
+  const { data } = await supabase
+    .from("watch_history")
+    .select("seconds_watched")
+    .eq("video_id", videoId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data?.seconds_watched ?? 0;
 }
 
 export async function recordWatch(videoId: string, userId: string, secondsWatched = 0) {
