@@ -217,11 +217,15 @@ export async function recordView(videoId: string) {
   await supabase.rpc("increment_video_views", { _video_id: videoId });
 }
 
-export async function recordWatch(videoId: string, userId: string) {
+export async function recordWatch(videoId: string, userId: string, secondsWatched = 0) {
   await supabase
     .from("watch_history")
-    .upsert({ video_id: videoId, user_id: userId, watched_at: new Date().toISOString() }, { onConflict: "user_id,video_id" });
+    .upsert(
+      { video_id: videoId, user_id: userId, watched_at: new Date().toISOString(), seconds_watched: secondsWatched },
+      { onConflict: "user_id,video_id" },
+    );
 }
+
 
 export async function fetchHistory(userId: string): Promise<Video[]> {
   const { data, error } = await supabase
