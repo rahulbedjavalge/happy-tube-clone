@@ -336,6 +336,8 @@ function ChannelSettings({ userId }: { userId: string }) {
   const [description, setDescription] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [country, setCountry] = useState("");
+  const [ageRange, setAgeRange] = useState("");
 
   useEffect(() => {
     if (!profile) return;
@@ -344,6 +346,8 @@ function ChannelSettings({ userId }: { userId: string }) {
     setDescription(profile.description ?? "");
     setAvatar(profile.avatar_url);
     setBanner(profile.banner_url);
+    setCountry(profile.country ?? "");
+    setAgeRange(profile.age_range ?? "");
   }, [profile]);
 
   const mutation = useMutation({
@@ -357,6 +361,8 @@ function ChannelSettings({ userId }: { userId: string }) {
         description: description.trim() || null,
         avatar_url: avatar,
         banner_url: banner,
+        country: country.trim() || null,
+        age_range: ageRange || null,
       });
       return cleanHandle;
     },
@@ -399,6 +405,36 @@ function ChannelSettings({ userId }: { userId: string }) {
             placeholder="Tell viewers about your channel"
           />
         </div>
+        <div>
+          <Label htmlFor="ccountry">Country (optional)</Label>
+          <Input
+            id="ccountry"
+            className="mt-1.5"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="e.g. Germany"
+          />
+        </div>
+        <div>
+          <Label htmlFor="cage">Age range (optional)</Label>
+          <select
+            id="cage"
+            className="mt-1.5 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={ageRange}
+            onChange={(e) => setAgeRange(e.target.value)}
+          >
+            <option value="">Prefer not to say</option>
+            {["13-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"].map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="text-xs text-muted-foreground sm:col-span-2">
+          Country and age range are never shown publicly — they only feed anonymous, aggregated audience stats for
+          creators whose videos you watch.
+        </p>
         <ImageUploadField userId={userId} label="Avatar" value={avatar} onUploaded={setAvatar} />
         <ImageUploadField userId={userId} label="Banner" value={banner} onUploaded={setBanner} />
       </div>
