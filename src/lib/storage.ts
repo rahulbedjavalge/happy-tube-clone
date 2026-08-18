@@ -47,7 +47,7 @@ export async function uploadMedia(userId: string, file: File, folder: string): P
   const path = `${userId}/${folder}/${crypto.randomUUID()}.${extensionOf(file)}`;
   const { error } = await supabase.storage.from("media").upload(path, file, {
     cacheControl: "3600",
-    contentType: file.type || undefined,
+    contentType: file.type || "application/octet-stream",
     upsert: false,
   });
   if (error) throw error;
