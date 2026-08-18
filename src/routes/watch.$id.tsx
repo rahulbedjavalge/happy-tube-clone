@@ -7,8 +7,10 @@ import { AppShell } from "@/components/AppShell";
 import { VideoRow } from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { useAuth } from "@/hooks/useAuth";
+import { useMediaUrl } from "@/lib/storage";
 import { formatCount, formatViews, initials, timeAgo } from "@/lib/format";
 import {
   addComment,
@@ -64,6 +66,10 @@ function WatchPage() {
     queryFn: () => fetchIsSubscribed(video!.owner_id, user!.id),
     enabled: Boolean(video?.owner_id && user?.id),
   });
+  const playbackUrl = useMediaUrl(video?.video_url);
+  const posterUrl = useMediaUrl(video?.thumbnail_url);
+
+
 
   useEffect(() => {
     if (!video) return;
@@ -127,8 +133,8 @@ function WatchPage() {
           <div className="overflow-hidden rounded-xl bg-black">
             <video
               key={video.id}
-              src={video.video_url}
-              poster={video.thumbnail_url ?? undefined}
+              src={playbackUrl ?? undefined}
+              poster={posterUrl ?? undefined}
               controls
               autoPlay
               className="aspect-video w-full"
@@ -141,7 +147,7 @@ function WatchPage() {
             <div className="flex items-center gap-3">
               <Link to="/channel/$handle" params={{ handle: video.owner?.handle ?? "" }}>
                 <Avatar className="size-10">
-                  <AvatarImage src={video.owner?.avatar_url ?? undefined} alt="" />
+                  <MediaAvatarImage src={video.owner?.avatar_url} />
                   <AvatarFallback>{initials(video.owner?.display_name ?? "?")}</AvatarFallback>
                 </Avatar>
               </Link>
@@ -239,7 +245,7 @@ function WatchPage() {
               {(comments ?? []).map((c) => (
                 <li key={c.id} className="flex gap-3">
                   <Avatar className="size-9">
-                    <AvatarImage src={c.author?.avatar_url ?? undefined} alt="" />
+                    <MediaAvatarImage src={c.author?.avatar_url} />
                     <AvatarFallback>{initials(c.author?.display_name ?? "?")}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">

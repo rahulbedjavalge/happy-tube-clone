@@ -1,0 +1,1 @@
+UPDATE public.videos SET is_short = true WHERE duration_seconds <= 15 AND duration_seconds > 0 AND id IN ('0ec6727d-a66a-4bd9-94fe-6b66593c5341','68cd89c4-2d53-49b7-93e1-98d6d9dcac05','263e69f5-f591-4e6d-b46b-1ab3f4f0544d');

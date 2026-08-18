@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type ChannelLink = { label: string; url: string };
+
 export type Channel = {
   id: string;
   handle: string;
@@ -7,6 +9,8 @@ export type Channel = {
   avatar_url: string | null;
   banner_url: string | null;
   description: string | null;
+  links?: ChannelLink[] | null;
+  created_at?: string;
 };
 
 export type Video = {
@@ -20,12 +24,13 @@ export type Video = {
   duration_seconds: number;
   views: number;
   is_public: boolean;
+  is_short: boolean;
   created_at: string;
   owner: Pick<Channel, "id" | "handle" | "display_name" | "avatar_url"> | null;
 };
 
 const VIDEO_SELECT =
-  "id, owner_id, title, description, video_url, thumbnail_url, category, duration_seconds, views, is_public, created_at, owner:profiles!videos_owner_id_fkey(id, handle, display_name, avatar_url)";
+  "id, owner_id, title, description, video_url, thumbnail_url, category, duration_seconds, views, is_public, is_short, created_at, owner:profiles!videos_owner_id_fkey(id, handle, display_name, avatar_url)";
 
 export const CATEGORIES = ["All", "Animation", "Film", "Tech", "Travel", "Music", "Gaming"] as const;
 
@@ -38,9 +43,24 @@ export async function fetchVideos(category?: string): Promise<Video[]> {
     .from("videos")
     .select(VIDEO_SELECT)
     .eq("is_public", true)
+    .eq("is_short", false)
     .order("created_at", { ascending: false })
     .limit(60);
   if (category && category !== "All") query = query.eq("category", category);
+  const { data, error } = await query;
+  if (error) throw error;
+  return rows<Video>(data);
+}
+
+export async function fetchShorts(ownerId?: string): Promise<Video[]> {
+  let query = supabase
+    .from("videos")
+    .select(VIDEO_SELECT)
+    .eq("is_public", true)
+    .eq("is_short", true)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (ownerId) query = query.eq("owner_id", ownerId);
   const { data, error } = await query;
   if (error) throw error;
   return rows<Video>(data);
@@ -262,6 +282,7 @@ export type VideoInput = {
   category: string;
   duration_seconds: number;
   is_public: boolean;
+  is_short: boolean;
 };
 
 export async function createVideo(ownerId: string, input: VideoInput) {

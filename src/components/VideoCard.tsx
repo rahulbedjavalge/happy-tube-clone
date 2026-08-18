@@ -1,15 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import type { Video } from "@/lib/queries";
 import { formatDuration, formatViews, initials, timeAgo } from "@/lib/format";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { cn } from "@/lib/utils";
+import { useMediaUrl } from "@/lib/storage";
 
 export function Thumbnail({ video, className }: { video: Video; className?: string }) {
+  const thumb = useMediaUrl(video.thumbnail_url);
   return (
     <div className={cn("relative aspect-video w-full overflow-hidden rounded-xl bg-muted", className)}>
-      {video.thumbnail_url ? (
+      {thumb ? (
         <img
-          src={video.thumbnail_url}
+          src={thumb}
           alt={video.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
@@ -36,7 +39,7 @@ export function VideoCard({ video }: { video: Video }) {
           aria-label={video.owner?.display_name ?? "Channel"}
         >
           <Avatar className="size-9">
-            <AvatarImage src={video.owner?.avatar_url ?? undefined} alt="" />
+            <MediaAvatarImage src={video.owner?.avatar_url} />
             <AvatarFallback>{initials(video.owner?.display_name ?? "?")}</AvatarFallback>
           </Avatar>
         </Link>
@@ -114,5 +117,39 @@ export function VideoGridSkeleton({ count = 8 }: { count?: number }) {
         </div>
       ))}
     </div>
+  );
+}
+
+export function ShortCard({ video }: { video: Video }) {
+  const thumb = useMediaUrl(video.thumbnail_url);
+  return (
+    <Link to="/shorts" search={{ v: video.id }} className="group block w-40 shrink-0 sm:w-44">
+      <div className="relative aspect-[9/16] w-full overflow-hidden rounded-xl bg-muted">
+        {thumb ? (
+          <img
+            src={thumb}
+            alt={video.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+        ) : null}
+      </div>
+      <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-snug text-foreground">{video.title}</h3>
+      <p className="text-xs text-muted-foreground">{formatViews(video.views)}</p>
+    </Link>
+  );
+}
+
+export function ShortsRow({ videos }: { videos: Video[] }) {
+  if (videos.length === 0) return null;
+  return (
+    <section className="mb-10">
+      <h2 className="mb-3 text-lg font-bold text-foreground">Shorts</h2>
+      <div className="flex gap-4 overflow-x-auto pb-2">
+        {videos.map((v) => (
+          <ShortCard key={v.id} video={v} />
+        ))}
+      </div>
+    </section>
   );
 }

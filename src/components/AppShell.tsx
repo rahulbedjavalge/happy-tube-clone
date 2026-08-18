@@ -13,10 +13,12 @@ import {
   LogOut,
   User as UserIcon,
   Play,
+  Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +61,7 @@ function ThemeToggle() {
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/shorts", label: "Shorts", icon: Clapperboard },
   { to: "/subscriptions", label: "Subscriptions", icon: ListVideo },
   { to: "/history", label: "History", icon: History },
   { to: "/liked", label: "Liked videos", icon: ThumbsUp },
@@ -145,7 +148,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             <DropdownMenuTrigger asChild>
               <button aria-label="Account menu" className="ml-1 rounded-full">
                 <Avatar className="size-8">
-                  <AvatarImage src={profile?.avatar_url ?? undefined} alt="" />
+                  <MediaAvatarImage src={profile?.avatar_url} />
                   <AvatarFallback>{initials(profile?.display_name ?? user.email ?? "U")}</AvatarFallback>
                 </Avatar>
               </button>
