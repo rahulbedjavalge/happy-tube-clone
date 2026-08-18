@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.validate_video_duration() FROM PUBLIC, anon, authenticated;
