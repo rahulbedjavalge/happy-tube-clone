@@ -333,16 +333,28 @@ export type ModerationComment = Comment & {
 };
 
 export async function fetchModerationComments(ownerId: string): Promise<ModerationComment[]> {
+  const { data: vids, error: vidsError } = await supabase
+    .from("videos")
+    .select("id, title")
+    .eq("owner_id", ownerId);
+  if (vidsError) throw vidsError;
+  const owned = rows<{ id: string; title: string }>(vids);
+  if (owned.length === 0) return [];
+  const titles = new Map(owned.map((v) => [v.id, v.title]));
+
   const { data, error } = await supabase
     .from("comments")
     .select(
-      "id, body, created_at, author_id, approved, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url), video:videos!comments_video_id_fkey!inner(id, title, owner_id)",
+      "id, body, created_at, author_id, approved, video_id, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)",
     )
-    .eq("videos.owner_id", ownerId)
+    .in("video_id", [...titles.keys()])
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw error;
-  return rows<ModerationComment>(data);
+  return rows<Omit<ModerationComment, "video"> & { video_id: string }>(data).map((c) => ({
+    ...c,
+    video: { id: c.video_id, title: titles.get(c.video_id) ?? "Untitled" },
+  }));
 }
 
 export async function setCommentApproval(id: string, approved: boolean) {
