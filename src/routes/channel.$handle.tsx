@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
-import { VideoGrid } from "@/components/VideoCard";
+import { ShortCard, VideoGrid } from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,7 @@ import {
   fetchSubscriberCount,
   toggleSubscription,
 } from "@/lib/queries";
+import { useMediaUrl } from "@/lib/storage";
 
 export const Route = createFileRoute("/channel/$handle")({
   head: () => ({
@@ -52,6 +53,11 @@ function ChannelPage() {
     queryFn: () => fetchIsSubscribed(channel!.id, user!.id),
     enabled: Boolean(channel?.id && user?.id),
   });
+
+  const bannerUrl = useMediaUrl(channel?.banner_url);
+  const avatarUrl = useMediaUrl(channel?.avatar_url);
+  const longVideos = (videos ?? []).filter((v) => !v.is_short);
+  const shorts = (videos ?? []).filter((v) => v.is_short);
 
   const subMutation = useMutation({
     mutationFn: async () => {
@@ -118,10 +124,10 @@ function ChannelPage() {
           <TabsTrigger value="about">About</TabsTrigger>
         </TabsList>
         <TabsContent value="videos" className="pt-6">
-          {(videos?.length ?? 0) === 0 ? (
+          {longVideos.length === 0 ? (
             <p className="py-12 text-center text-muted-foreground">No videos published yet.</p>
           ) : (
-            <VideoGrid videos={videos ?? []} />
+            <VideoGrid videos={longVideos} />
           )}
         </TabsContent>
         <TabsContent value="shorts" className="pt-6">

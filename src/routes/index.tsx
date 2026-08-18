@@ -51,6 +51,7 @@ function Index() {
           </button>
         ))}
       </div>
+      <ShortsRow videos={shorts ?? []} />
       {isLoading ? <VideoGridSkeleton /> : <VideoGrid videos={data ?? []} />}
       {!isLoading && (data?.length ?? 0) === 0 ? (
         <p className="py-16 text-center text-muted-foreground">No videos in this category yet.</p>
