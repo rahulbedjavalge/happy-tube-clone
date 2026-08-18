@@ -13,6 +13,7 @@ import {
   LogOut,
   User as UserIcon,
   Play,
+  Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,7 @@ function ThemeToggle() {
 
 const navItems = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/shorts", label: "Shorts", icon: Clapperboard },
   { to: "/subscriptions", label: "Subscriptions", icon: ListVideo },
   { to: "/history", label: "History", icon: History },
   { to: "/liked", label: "Liked videos", icon: ThumbsUp },

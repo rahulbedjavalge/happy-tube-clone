@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { useMediaUrl } from "@/lib/storage";
 import { formatCount, formatViews, initials, timeAgo } from "@/lib/format";
 import {
   addComment,
