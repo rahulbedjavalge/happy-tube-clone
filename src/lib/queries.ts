@@ -161,18 +161,22 @@ export type Comment = {
   body: string;
   created_at: string;
   author_id: string;
+  approved: boolean;
   author: Pick<Channel, "handle" | "display_name" | "avatar_url"> | null;
 };
 
 export async function fetchComments(videoId: string): Promise<Comment[]> {
   const { data, error } = await supabase
     .from("comments")
-    .select("id, body, created_at, author_id, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)")
+    .select(
+      "id, body, created_at, author_id, approved, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)",
+    )
     .eq("video_id", videoId)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return rows<Comment>(data);
 }
+
 
 export async function addComment(videoId: string, authorId: string, body: string) {
   const { error } = await supabase.from("comments").insert({ video_id: videoId, author_id: authorId, body });
