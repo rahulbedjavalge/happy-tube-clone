@@ -84,14 +84,14 @@ function ChannelPage() {
   return (
     <AppShell>
       <div className="h-32 w-full overflow-hidden rounded-2xl bg-muted sm:h-44">
-        {channel.banner_url ? (
-          <img src={channel.banner_url} alt="" className="h-full w-full object-cover" />
+        {bannerUrl ? (
+          <img src={bannerUrl} alt="" className="h-full w-full object-cover" />
         ) : null}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <Avatar className="size-20">
-          <AvatarImage src={channel.avatar_url ?? undefined} alt="" />
+          <AvatarImage src={avatarUrl ?? undefined} alt="" />
           <AvatarFallback className="text-2xl">{initials(channel.display_name)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
@@ -114,6 +114,7 @@ function ChannelPage() {
       <Tabs defaultValue="videos" className="mt-6">
         <TabsList>
           <TabsTrigger value="videos">Videos</TabsTrigger>
+          <TabsTrigger value="shorts">Shorts</TabsTrigger>
           <TabsTrigger value="about">About</TabsTrigger>
         </TabsList>
         <TabsContent value="videos" className="pt-6">
@@ -121,6 +122,17 @@ function ChannelPage() {
             <p className="py-12 text-center text-muted-foreground">No videos published yet.</p>
           ) : (
             <VideoGrid videos={videos ?? []} />
+          )}
+        </TabsContent>
+        <TabsContent value="shorts" className="pt-6">
+          {shorts.length === 0 ? (
+            <p className="py-12 text-center text-muted-foreground">No shorts yet.</p>
+          ) : (
+            <div className="flex flex-wrap gap-4">
+              {shorts.map((s) => (
+                <ShortCard key={s.id} video={s} />
+              ))}
+            </div>
           )}
         </TabsContent>
         <TabsContent value="about" className="pt-6">

@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { VideoGrid, VideoGridSkeleton } from "@/components/VideoCard";
-import { CATEGORIES, fetchVideos } from "@/lib/queries";
+import { ShortsRow, VideoGrid, VideoGridSkeleton } from "@/components/VideoCard";
+import { CATEGORIES, fetchShorts, fetchVideos } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -30,6 +30,7 @@ function Index() {
     queryKey: ["videos", category],
     queryFn: () => fetchVideos(category),
   });
+  const { data: shorts } = useQuery({ queryKey: ["shorts"], queryFn: () => fetchShorts() });
 
   return (
     <AppShell>
