@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { BarChart3, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Thumbnail } from "@/components/VideoCard";
 import { ImageUploadField, VideoUploadField } from "@/components/UploadFields";
+import { StudioDashboard } from "@/components/StudioDashboard";
+import { CommentModeration } from "@/components/CommentModeration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDuration, formatViews, timeAgo } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { MAX_DURATION_SECONDS, SHORT_MAX_SECONDS } from "@/lib/storage";
 import {
   CATEGORIES,
@@ -71,11 +74,11 @@ function StudioPage() {
 function Studio() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const [tab, setTab] = useState<"dashboard" | "videos" | "comments" | "settings">("dashboard");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState<VideoInput>(emptyInput);
 
-  const { data: profile } = useQuery({ queryKey: ["profile", user?.id], queryFn: () => fetchProfile(user!.id) });
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", user?.id],
     queryFn: () => fetchChannelVideos(user!.id),
@@ -112,11 +115,35 @@ function Studio() {
     },
   });
 
-  return (
-    <div className="mt-6 space-y-10">
-      <ChannelSettings userId={user!.id} />
+  const tabs = [
+    { id: "dashboard", label: "Dashboard" },
+    { id: "videos", label: "Videos" },
+    { id: "comments", label: "Comments" },
+    { id: "settings", label: "Settings" },
+  ] as const;
 
-      <section>
+  return (
+    <div className="mt-6 space-y-8">
+      <nav className="flex flex-wrap gap-2 border-b border-border pb-3">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={cn(
+              "rounded-full px-4 py-1.5 text-sm",
+              tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "dashboard" ? <StudioDashboard userId={user!.id} /> : null}
+      {tab === "comments" ? <CommentModeration userId={user!.id} /> : null}
+      {tab === "settings" ? <ChannelSettings userId={user!.id} /> : null}
+
+      <section className={cn(tab === "videos" ? "" : "hidden")}>
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
           <Button
@@ -143,6 +170,11 @@ function Studio() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <Button variant="secondary" size="sm" asChild>
+                  <Link to="/watch/$id" params={{ id: v.id }} title="View analytics">
+                    <BarChart3 className="size-4" />
+                  </Link>
+                </Button>
                 <Button
                   variant="secondary"
                   size="sm"
