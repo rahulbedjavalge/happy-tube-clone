@@ -10,6 +10,8 @@ export type Channel = {
   banner_url: string | null;
   description: string | null;
   links?: ChannelLink[] | null;
+  country?: string | null;
+  age_range?: string | null;
   created_at?: string;
 };
 
@@ -161,18 +163,22 @@ export type Comment = {
   body: string;
   created_at: string;
   author_id: string;
+  approved: boolean;
   author: Pick<Channel, "handle" | "display_name" | "avatar_url"> | null;
 };
 
 export async function fetchComments(videoId: string): Promise<Comment[]> {
   const { data, error } = await supabase
     .from("comments")
-    .select("id, body, created_at, author_id, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)")
+    .select(
+      "id, body, created_at, author_id, approved, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)",
+    )
     .eq("video_id", videoId)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return rows<Comment>(data);
 }
+
 
 export async function addComment(videoId: string, authorId: string, body: string) {
   const { error } = await supabase.from("comments").insert({ video_id: videoId, author_id: authorId, body });
@@ -213,11 +219,25 @@ export async function recordView(videoId: string) {
   await supabase.rpc("increment_video_views", { _video_id: videoId });
 }
 
-export async function recordWatch(videoId: string, userId: string) {
+export async function fetchWatchSeconds(videoId: string, userId: string): Promise<number> {
+  const { data } = await supabase
+    .from("watch_history")
+    .select("seconds_watched")
+    .eq("video_id", videoId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data?.seconds_watched ?? 0;
+}
+
+export async function recordWatch(videoId: string, userId: string, secondsWatched = 0) {
   await supabase
     .from("watch_history")
-    .upsert({ video_id: videoId, user_id: userId, watched_at: new Date().toISOString() }, { onConflict: "user_id,video_id" });
+    .upsert(
+      { video_id: videoId, user_id: userId, watched_at: new Date().toISOString(), seconds_watched: secondsWatched },
+      { onConflict: "user_id,video_id" },
+    );
 }
+
 
 export async function fetchHistory(userId: string): Promise<Video[]> {
   const { data, error } = await supabase
@@ -303,4 +323,78 @@ export async function deleteVideo(id: string) {
 export async function updateProfile(id: string, patch: Partial<Channel>) {
   const { error } = await supabase.from("profiles").update(patch).eq("id", id);
   if (error) throw error;
+}
+
+/* ---------- moderation ---------- */
+
+export type ModerationComment = Comment & {
+  approved: boolean;
+  video: { id: string; title: string } | null;
+};
+
+export async function fetchModerationComments(ownerId: string): Promise<ModerationComment[]> {
+  const { data: vids, error: vidsError } = await supabase
+    .from("videos")
+    .select("id, title")
+    .eq("owner_id", ownerId);
+  if (vidsError) throw vidsError;
+  const owned = rows<{ id: string; title: string }>(vids);
+  if (owned.length === 0) return [];
+  const titles = new Map(owned.map((v) => [v.id, v.title]));
+
+  const { data, error } = await supabase
+    .from("comments")
+    .select(
+      "id, body, created_at, author_id, approved, video_id, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url)",
+    )
+    .in("video_id", [...titles.keys()])
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return rows<Omit<ModerationComment, "video"> & { video_id: string }>(data).map((c) => ({
+    ...c,
+    video: { id: c.video_id, title: titles.get(c.video_id) ?? "Untitled" },
+  }));
+}
+
+export async function setCommentApproval(id: string, approved: boolean) {
+  const { error } = await supabase.from("comments").update({ approved }).eq("id", id);
+  if (error) throw error;
+}
+
+/* ---------- analytics ---------- */
+
+export type Bucket = { label: string; value: number };
+
+export type VideoAnalytics = {
+  views: number;
+  likes: number;
+  dislikes: number;
+  watch_seconds: number;
+  viewers: number;
+  countries: Bucket[];
+  ages: Bucket[];
+};
+
+export type ChannelAnalytics = {
+  uploads: number;
+  shorts: number;
+  views: number;
+  likes: number;
+  subscribers: number;
+  comments: number;
+  pending_comments: number;
+  watch_seconds: number;
+};
+
+export async function fetchVideoAnalytics(videoId: string): Promise<VideoAnalytics | null> {
+  const { data, error } = await supabase.rpc("video_analytics", { _video_id: videoId });
+  if (error) return null;
+  return (data as unknown as VideoAnalytics) ?? null;
+}
+
+export async function fetchChannelAnalytics(ownerId: string): Promise<ChannelAnalytics | null> {
+  const { data, error } = await supabase.rpc("channel_analytics", { _owner_id: ownerId });
+  if (error) return null;
+  return (data as unknown as ChannelAnalytics) ?? null;
 }

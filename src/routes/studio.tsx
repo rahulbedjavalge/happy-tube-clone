@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { BarChart3, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Thumbnail } from "@/components/VideoCard";
 import { ImageUploadField, VideoUploadField } from "@/components/UploadFields";
+import { StudioDashboard } from "@/components/StudioDashboard";
+import { CommentModeration } from "@/components/CommentModeration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDuration, formatViews, timeAgo } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { MAX_DURATION_SECONDS, SHORT_MAX_SECONDS } from "@/lib/storage";
 import {
   CATEGORIES,
@@ -71,11 +74,11 @@ function StudioPage() {
 function Studio() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const [tab, setTab] = useState<"dashboard" | "videos" | "comments" | "settings">("dashboard");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState<VideoInput>(emptyInput);
 
-  const { data: profile } = useQuery({ queryKey: ["profile", user?.id], queryFn: () => fetchProfile(user!.id) });
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", user?.id],
     queryFn: () => fetchChannelVideos(user!.id),
@@ -112,11 +115,35 @@ function Studio() {
     },
   });
 
-  return (
-    <div className="mt-6 space-y-10">
-      <ChannelSettings userId={user!.id} />
+  const tabs = [
+    { id: "dashboard", label: "Dashboard" },
+    { id: "videos", label: "Videos" },
+    { id: "comments", label: "Comments" },
+    { id: "settings", label: "Settings" },
+  ] as const;
 
-      <section>
+  return (
+    <div className="mt-6 space-y-8">
+      <nav className="flex flex-wrap gap-2 border-b border-border pb-3">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={cn(
+              "rounded-full px-4 py-1.5 text-sm",
+              tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "dashboard" ? <StudioDashboard userId={user!.id} /> : null}
+      {tab === "comments" ? <CommentModeration userId={user!.id} /> : null}
+      {tab === "settings" ? <ChannelSettings userId={user!.id} /> : null}
+
+      <section className={cn(tab === "videos" ? "" : "hidden")}>
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
           <Button
@@ -143,6 +170,11 @@ function Studio() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <Button variant="secondary" size="sm" asChild>
+                  <Link to="/watch/$id" params={{ id: v.id }} title="View analytics">
+                    <BarChart3 className="size-4" />
+                  </Link>
+                </Button>
                 <Button
                   variant="secondary"
                   size="sm"
@@ -304,6 +336,8 @@ function ChannelSettings({ userId }: { userId: string }) {
   const [description, setDescription] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [country, setCountry] = useState("");
+  const [ageRange, setAgeRange] = useState("");
 
   useEffect(() => {
     if (!profile) return;
@@ -312,6 +346,8 @@ function ChannelSettings({ userId }: { userId: string }) {
     setDescription(profile.description ?? "");
     setAvatar(profile.avatar_url);
     setBanner(profile.banner_url);
+    setCountry(profile.country ?? "");
+    setAgeRange(profile.age_range ?? "");
   }, [profile]);
 
   const mutation = useMutation({
@@ -325,6 +361,8 @@ function ChannelSettings({ userId }: { userId: string }) {
         description: description.trim() || null,
         avatar_url: avatar,
         banner_url: banner,
+        country: country.trim() || null,
+        age_range: ageRange || null,
       });
       return cleanHandle;
     },
@@ -367,6 +405,36 @@ function ChannelSettings({ userId }: { userId: string }) {
             placeholder="Tell viewers about your channel"
           />
         </div>
+        <div>
+          <Label htmlFor="ccountry">Country (optional)</Label>
+          <Input
+            id="ccountry"
+            className="mt-1.5"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="e.g. Germany"
+          />
+        </div>
+        <div>
+          <Label htmlFor="cage">Age range (optional)</Label>
+          <select
+            id="cage"
+            className="mt-1.5 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={ageRange}
+            onChange={(e) => setAgeRange(e.target.value)}
+          >
+            <option value="">Prefer not to say</option>
+            {["13-17", "18-24", "25-34", "35-44", "45-54", "55-64", "65+"].map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="text-xs text-muted-foreground sm:col-span-2">
+          Country and age range are never shown publicly — they only feed anonymous, aggregated audience stats for
+          creators whose videos you watch.
+        </p>
         <ImageUploadField userId={userId} label="Avatar" value={avatar} onUploaded={setAvatar} />
         <ImageUploadField userId={userId} label="Banner" value={banner} onUploaded={setBanner} />
       </div>

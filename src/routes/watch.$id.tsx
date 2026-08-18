@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MediaAvatarImage } from "@/components/MediaAvatar";
+import { VideoAnalyticsPanel } from "@/components/VideoAnalyticsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useMediaUrl } from "@/lib/storage";
 import { formatCount, formatViews, initials, timeAgo } from "@/lib/format";
@@ -21,6 +22,7 @@ import {
   fetchRelated,
   fetchSubscriberCount,
   fetchVideo,
+  fetchWatchSeconds,
   recordView,
   recordWatch,
   setLike,
@@ -66,6 +68,9 @@ function WatchPage() {
     queryFn: () => fetchIsSubscribed(video!.owner_id, user!.id),
     enabled: Boolean(video?.owner_id && user?.id),
   });
+  const watchedRef = useRef(0);
+  const baseRef = useRef(0);
+  const lastTimeRef = useRef(0);
   const playbackUrl = useMediaUrl(video?.video_url);
   const posterUrl = useMediaUrl(video?.thumbnail_url);
 
@@ -74,7 +79,26 @@ function WatchPage() {
   useEffect(() => {
     if (!video) return;
     void recordView(video.id);
-    if (user) void recordWatch(video.id, user.id);
+    if (!user) return;
+
+    watchedRef.current = 0;
+    lastTimeRef.current = 0;
+    let cancelled = false;
+    void fetchWatchSeconds(video.id, user.id).then((s) => {
+      if (!cancelled) baseRef.current = s;
+    });
+    void recordWatch(video.id, user.id, 0);
+
+    const flush = () => {
+      if (watchedRef.current < 1) return;
+      void recordWatch(video.id, user.id, Math.round(baseRef.current + watchedRef.current));
+    };
+    const interval = window.setInterval(flush, 15000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      flush();
+    };
   }, [video, user]);
 
   const likeMutation = useMutation({
@@ -105,10 +129,13 @@ function WatchPage() {
     },
     onSuccess: () => {
       setComment("");
+      toast.success("Comment submitted — visible once the creator approves it");
       qc.invalidateQueries({ queryKey: ["comments", id] });
     },
     onError: () => navigate({ to: "/auth" }),
   });
+
+  const visibleComments = comments ?? [];
 
   if (isLoading) {
     return (
@@ -137,6 +164,12 @@ function WatchPage() {
               poster={posterUrl ?? undefined}
               controls
               autoPlay
+              onTimeUpdate={(e) => {
+                const t = e.currentTarget.currentTime;
+                const delta = t - lastTimeRef.current;
+                if (delta > 0 && delta < 2) watchedRef.current += delta;
+                lastTimeRef.current = t;
+              }}
               className="aspect-video w-full"
             />
           </div>
@@ -217,8 +250,10 @@ function WatchPage() {
             </button>
           </div>
 
+          {user?.id === video.owner_id ? <VideoAnalyticsPanel videoId={video.id} /> : null}
+
           <section className="mt-8">
-            <h2 className="text-lg font-bold text-foreground">{comments?.length ?? 0} Comments</h2>
+            <h2 className="text-lg font-bold text-foreground">{visibleComments.length} Comments</h2>
             <div className="mt-4 flex gap-3">
               <Avatar className="size-9">
                 <AvatarFallback>{initials(user?.email ?? "?")}</AvatarFallback>
@@ -242,7 +277,7 @@ function WatchPage() {
             </div>
 
             <ul className="mt-6 space-y-5">
-              {(comments ?? []).map((c) => (
+              {visibleComments.map((c) => (
                 <li key={c.id} className="flex gap-3">
                   <Avatar className="size-9">
                     <MediaAvatarImage src={c.author?.avatar_url} />
@@ -252,6 +287,11 @@ function WatchPage() {
                     <p className="text-sm font-medium text-foreground">
                       {c.author?.display_name}{" "}
                       <span className="font-normal text-muted-foreground">{timeAgo(c.created_at)}</span>
+                      {!c.approved ? (
+                        <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-normal text-muted-foreground">
+                          Pending review
+                        </span>
+                      ) : null}
                     </p>
                     <p className="whitespace-pre-wrap text-sm text-foreground/90">{c.body}</p>
                     {user?.id === c.author_id ? (

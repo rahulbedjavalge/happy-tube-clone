@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       comments: {
         Row: {
+          approved: boolean
           author_id: string
           body: string
           created_at: string
@@ -23,6 +24,7 @@ export type Database = {
           video_id: string
         }
         Insert: {
+          approved?: boolean
           author_id: string
           body: string
           created_at?: string
@@ -30,6 +32,7 @@ export type Database = {
           video_id: string
         }
         Update: {
+          approved?: boolean
           author_id?: string
           body?: string
           created_at?: string
@@ -55,8 +58,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_range: string | null
           avatar_url: string | null
           banner_url: string | null
+          country: string | null
           created_at: string
           description: string | null
           display_name: string
@@ -65,8 +70,10 @@ export type Database = {
           links: Json
         }
         Insert: {
+          age_range?: string | null
           avatar_url?: string | null
           banner_url?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
           display_name: string
@@ -75,8 +82,10 @@ export type Database = {
           links?: Json
         }
         Update: {
+          age_range?: string | null
           avatar_url?: string | null
           banner_url?: string | null
+          country?: string | null
           created_at?: string
           description?: string | null
           display_name?: string
@@ -213,16 +222,19 @@ export type Database = {
       }
       watch_history: {
         Row: {
+          seconds_watched: number
           user_id: string
           video_id: string
           watched_at: string
         }
         Insert: {
+          seconds_watched?: number
           user_id: string
           video_id: string
           watched_at?: string
         }
         Update: {
+          seconds_watched?: number
           user_id?: string
           video_id?: string
           watched_at?: string
@@ -249,7 +261,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      channel_analytics: { Args: { _owner_id: string }; Returns: Json }
       increment_video_views: { Args: { _video_id: string }; Returns: undefined }
+      video_analytics: { Args: { _video_id: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
