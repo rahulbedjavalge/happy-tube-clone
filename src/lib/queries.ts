@@ -304,3 +304,65 @@ export async function updateProfile(id: string, patch: Partial<Channel>) {
   const { error } = await supabase.from("profiles").update(patch).eq("id", id);
   if (error) throw error;
 }
+
+/* ---------- moderation ---------- */
+
+export type ModerationComment = Comment & {
+  approved: boolean;
+  video: { id: string; title: string } | null;
+};
+
+export async function fetchModerationComments(ownerId: string): Promise<ModerationComment[]> {
+  const { data, error } = await supabase
+    .from("comments")
+    .select(
+      "id, body, created_at, author_id, approved, author:profiles!comments_author_id_fkey(handle, display_name, avatar_url), video:videos!comments_video_id_fkey!inner(id, title, owner_id)",
+    )
+    .eq("videos.owner_id", ownerId)
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return rows<ModerationComment>(data);
+}
+
+export async function setCommentApproval(id: string, approved: boolean) {
+  const { error } = await supabase.from("comments").update({ approved }).eq("id", id);
+  if (error) throw error;
+}
+
+/* ---------- analytics ---------- */
+
+export type Bucket = { label: string; value: number };
+
+export type VideoAnalytics = {
+  views: number;
+  likes: number;
+  dislikes: number;
+  watch_seconds: number;
+  viewers: number;
+  countries: Bucket[];
+  ages: Bucket[];
+};
+
+export type ChannelAnalytics = {
+  uploads: number;
+  shorts: number;
+  views: number;
+  likes: number;
+  subscribers: number;
+  comments: number;
+  pending_comments: number;
+  watch_seconds: number;
+};
+
+export async function fetchVideoAnalytics(videoId: string): Promise<VideoAnalytics | null> {
+  const { data, error } = await supabase.rpc("video_analytics", { _video_id: videoId });
+  if (error) return null;
+  return (data as unknown as VideoAnalytics) ?? null;
+}
+
+export async function fetchChannelAnalytics(ownerId: string): Promise<ChannelAnalytics | null> {
+  const { data, error } = await supabase.rpc("channel_analytics", { _owner_id: ownerId });
+  if (error) return null;
+  return (data as unknown as ChannelAnalytics) ?? null;
+}
