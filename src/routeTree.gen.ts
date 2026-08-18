@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LikedRouteImport } from './routes/liked'
 import { Route as ResultsRouteImport } from './routes/results'
+import { Route as ShortsRouteImport } from './routes/shorts'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as ChannelHandleRouteImport } from './routes/channel.$handle'
@@ -44,6 +45,11 @@ const ResultsRoute = ResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShortsRoute = ShortsRouteImport.update({
+  id: '/shorts',
+  path: '/shorts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
+  '/shorts': typeof ShortsRoute
   '/studio': typeof StudioRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/channel/$handle': typeof ChannelHandleRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
+  '/shorts': typeof ShortsRoute
   '/studio': typeof StudioRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/channel/$handle': typeof ChannelHandleRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
+  '/shorts': typeof ShortsRoute
   '/studio': typeof StudioRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/channel/$handle': typeof ChannelHandleRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/liked'
     | '/results'
+    | '/shorts'
     | '/studio'
     | '/subscriptions'
     | '/channel/$handle'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/liked'
     | '/results'
+    | '/shorts'
     | '/studio'
     | '/subscriptions'
     | '/channel/$handle'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/liked'
     | '/results'
+    | '/shorts'
     | '/studio'
     | '/subscriptions'
     | '/channel/$handle'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   LikedRoute: typeof LikedRoute
   ResultsRoute: typeof ResultsRoute
+  ShortsRoute: typeof ShortsRoute
   StudioRoute: typeof StudioRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   ChannelHandleRoute: typeof ChannelHandleRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shorts': {
+      id: '/shorts'
+      path: '/shorts'
+      fullPath: '/shorts'
+      preLoaderRoute: typeof ShortsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studio': {
       id: '/studio'
       path: '/studio'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   LikedRoute: LikedRoute,
   ResultsRoute: ResultsRoute,
+  ShortsRoute: ShortsRoute,
   StudioRoute: StudioRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   ChannelHandleRoute: ChannelHandleRoute,

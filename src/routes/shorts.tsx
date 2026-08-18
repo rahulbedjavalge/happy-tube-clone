@@ -12,7 +12,7 @@ import { fetchLikes, fetchShorts, recordView, setLike, type Video } from "@/lib/
 import { useMediaUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-type ShortsSearch = { v?: string };
+type ShortsSearch = { v?: string | undefined };
 
 export const Route = createFileRoute("/shorts")({
   validateSearch: (search: Record<string, unknown>): ShortsSearch => ({
