@@ -68,7 +68,6 @@ function WatchPage() {
     queryFn: () => fetchIsSubscribed(video!.owner_id, user!.id),
     enabled: Boolean(video?.owner_id && user?.id),
   });
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const watchedRef = useRef(0);
   const baseRef = useRef(0);
   const lastTimeRef = useRef(0);
@@ -163,7 +162,6 @@ function WatchPage() {
               key={video.id}
               src={playbackUrl ?? undefined}
               poster={posterUrl ?? undefined}
-              ref={videoRef}
               controls
               autoPlay
               onTimeUpdate={(e) => {
