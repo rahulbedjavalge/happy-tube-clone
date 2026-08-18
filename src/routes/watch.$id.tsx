@@ -64,6 +64,10 @@ function WatchPage() {
     queryFn: () => fetchIsSubscribed(video!.owner_id, user!.id),
     enabled: Boolean(video?.owner_id && user?.id),
   });
+  const playbackUrl = useMediaUrl(video?.video_url);
+  const posterUrl = useMediaUrl(video?.thumbnail_url);
+
+
 
   useEffect(() => {
     if (!video) return;
