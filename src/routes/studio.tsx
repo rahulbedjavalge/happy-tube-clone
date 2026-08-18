@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Thumbnail } from "@/components/VideoCard";
+import { ImageUploadField, VideoUploadField } from "@/components/UploadFields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +20,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { formatViews, timeAgo } from "@/lib/format";
+import { formatDuration, formatViews, timeAgo } from "@/lib/format";
+import { MAX_DURATION_SECONDS, SHORT_MAX_SECONDS } from "@/lib/storage";
 import {
   CATEGORIES,
   createVideo,
@@ -36,9 +38,9 @@ export const Route = createFileRoute("/studio")({
   head: () => ({
     meta: [
       { title: "Creator Studio — Streamly" },
-      { name: "description", content: "Publish new videos, edit your uploads and manage your Streamly channel." },
+      { name: "description", content: "Upload videos and shorts, edit your uploads and manage your Streamly channel." },
       { property: "og:title", content: "Creator Studio — Streamly" },
-      { property: "og:description", content: "Publish new videos, edit uploads and manage your channel." },
+      { property: "og:description", content: "Upload videos and shorts, edit uploads and manage your channel." },
     ],
   }),
   component: StudioPage,
@@ -52,6 +54,7 @@ const emptyInput: VideoInput = {
   category: "Film",
   duration_seconds: 60,
   is_public: true,
+  is_short: false,
 };
 
 function StudioPage() {
@@ -80,6 +83,9 @@ function Studio() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      if (form.duration_seconds > MAX_DURATION_SECONDS) throw new Error("Videos can be at most 10 minutes long");
+      if (form.is_short && form.duration_seconds > SHORT_MAX_SECONDS)
+        throw new Error("Shorts can be at most 60 seconds long");
       const payload = { ...form, thumbnail_url: form.thumbnail_url || null };
       if (editing) await updateVideo(editing.id, payload);
       else await createVideo(user!.id, payload);
@@ -91,6 +97,7 @@ function Studio() {
       setForm(emptyInput);
       qc.invalidateQueries({ queryKey: ["channel-videos"] });
       qc.invalidateQueries({ queryKey: ["videos"] });
+      qc.invalidateQueries({ queryKey: ["shorts"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -100,63 +107,14 @@ function Studio() {
     onSuccess: () => {
       toast.success("Video deleted");
       qc.invalidateQueries({ queryKey: ["channel-videos"] });
-    },
-  });
-
-  const [channelName, setChannelName] = useState("");
-  const [channelBio, setChannelBio] = useState("");
-
-  const profileMutation = useMutation({
-    mutationFn: () =>
-      updateProfile(user!.id, {
-        display_name: channelName || profile?.display_name || "Channel",
-        description: channelBio || profile?.description || null,
-      }),
-    onSuccess: () => {
-      toast.success("Channel updated");
-      qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries({ queryKey: ["videos"] });
+      qc.invalidateQueries({ queryKey: ["shorts"] });
     },
   });
 
   return (
     <div className="mt-6 space-y-10">
-      <section className="rounded-xl border border-border p-5">
-        <h2 className="font-semibold text-foreground">Channel settings</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="cname">Display name</Label>
-            <Input
-              id="cname"
-              className="mt-1.5"
-              value={channelName}
-              placeholder={profile?.display_name ?? "Your channel"}
-              onChange={(e) => setChannelName(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="cbio">Description</Label>
-            <Input
-              id="cbio"
-              className="mt-1.5"
-              value={channelBio}
-              placeholder={profile?.description ?? "Tell viewers about your channel"}
-              onChange={(e) => setChannelBio(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="mt-4 flex items-center gap-3">
-          <Button onClick={() => profileMutation.mutate()}>Save channel</Button>
-          {profile ? (
-            <Link
-              to="/channel/$handle"
-              params={{ handle: profile.handle }}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              View public page
-            </Link>
-          ) : null}
-        </div>
-      </section>
+      <ChannelSettings userId={user!.id} />
 
       <section>
         <div className="flex items-center justify-between">
@@ -169,7 +127,7 @@ function Studio() {
               setOpen(true);
             }}
           >
-            <Plus className="mr-2 size-4" /> New video
+            <Plus className="mr-2 size-4" /> Upload
           </Button>
         </div>
 
@@ -180,7 +138,8 @@ function Studio() {
               <div className="min-w-0 flex-1">
                 <p className="line-clamp-1 font-medium text-foreground">{v.title}</p>
                 <p className="text-xs text-muted-foreground">
-                  {formatViews(v.views)} · {timeAgo(v.created_at)} · {v.is_public ? "Public" : "Private"}
+                  {formatViews(v.views)} · {timeAgo(v.created_at)} · {formatDuration(v.duration_seconds)} ·{" "}
+                  {v.is_short ? "Short" : "Video"} · {v.is_public ? "Public" : "Private"}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -197,6 +156,7 @@ function Studio() {
                       category: v.category,
                       duration_seconds: v.duration_seconds,
                       is_public: v.is_public,
+                      is_short: v.is_short,
                     });
                     setOpen(true);
                   }}
@@ -218,9 +178,24 @@ function Studio() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit video" : "Publish a video"}</DialogTitle>
+            <DialogTitle>{editing ? "Edit video" : "Upload a video"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {!editing ? (
+              <VideoUploadField
+                userId={user!.id}
+                currentUrl={form.video_url}
+                onUploaded={(r) =>
+                  setForm((f) => ({
+                    ...f,
+                    video_url: r.video_url,
+                    thumbnail_url: r.thumbnail_url ?? f.thumbnail_url,
+                    duration_seconds: r.duration_seconds,
+                    is_short: r.is_short,
+                  }))
+                }
+              />
+            ) : null}
             <div>
               <Label htmlFor="title">Title</Label>
               <Input
@@ -241,7 +216,7 @@ function Studio() {
               />
             </div>
             <div>
-              <Label htmlFor="url">Video URL (mp4)</Label>
+              <Label htmlFor="url">Video URL (or upload above)</Label>
               <Input
                 id="url"
                 className="mt-1.5"
@@ -250,16 +225,12 @@ function Studio() {
                 onChange={(e) => setForm({ ...form, video_url: e.target.value })}
               />
             </div>
-            <div>
-              <Label htmlFor="thumb">Thumbnail URL</Label>
-              <Input
-                id="thumb"
-                className="mt-1.5"
-                placeholder="https://..."
-                value={form.thumbnail_url ?? ""}
-                onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })}
-              />
-            </div>
+            <ImageUploadField
+              userId={user!.id}
+              label="Thumbnail"
+              value={form.thumbnail_url}
+              onUploaded={(ref) => setForm((f) => ({ ...f, thumbnail_url: ref }))}
+            />
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="cat">Category</Label>
@@ -277,23 +248,34 @@ function Studio() {
                 </select>
               </div>
               <div>
-                <Label htmlFor="dur">Duration (seconds)</Label>
+                <Label htmlFor="dur">Duration (seconds, max 600)</Label>
                 <Input
                   id="dur"
                   type="number"
+                  max={MAX_DURATION_SECONDS}
                   className="mt-1.5"
                   value={form.duration_seconds}
                   onChange={(e) => setForm({ ...form, duration_seconds: Number(e.target.value) })}
                 />
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Switch
-                id="pub"
-                checked={form.is_public}
-                onCheckedChange={(v) => setForm({ ...form, is_public: v })}
-              />
-              <Label htmlFor="pub">Public</Label>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="pub"
+                  checked={form.is_public}
+                  onCheckedChange={(v) => setForm({ ...form, is_public: v })}
+                />
+                <Label htmlFor="pub">Public</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="short"
+                  checked={form.is_short}
+                  onCheckedChange={(v) => setForm({ ...form, is_short: v })}
+                />
+                <Label htmlFor="short">Publish as Short (≤ 60s)</Label>
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -310,5 +292,98 @@ function Studio() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function ChannelSettings({ userId }: { userId: string }) {
+  const qc = useQueryClient();
+  const { data: profile } = useQuery({ queryKey: ["profile", userId], queryFn: () => fetchProfile(userId) });
+
+  const [displayName, setDisplayName] = useState("");
+  const [handle, setHandle] = useState("");
+  const [description, setDescription] = useState("");
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!profile) return;
+    setDisplayName(profile.display_name);
+    setHandle(profile.handle);
+    setDescription(profile.description ?? "");
+    setAvatar(profile.avatar_url);
+    setBanner(profile.banner_url);
+  }, [profile]);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const cleanHandle = handle.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, "");
+      if (cleanHandle.length < 3) throw new Error("Handle must be at least 3 characters");
+      if (!displayName.trim()) throw new Error("Display name is required");
+      await updateProfile(userId, {
+        display_name: displayName.trim(),
+        handle: cleanHandle,
+        description: description.trim() || null,
+        avatar_url: avatar,
+        banner_url: banner,
+      });
+      return cleanHandle;
+    },
+    onSuccess: (cleanHandle) => {
+      setHandle(cleanHandle);
+      toast.success("Channel updated");
+      qc.invalidateQueries({ queryKey: ["profile"] });
+      qc.invalidateQueries({ queryKey: ["channel"] });
+    },
+    onError: (e: Error) =>
+      toast.error(e.message.includes("duplicate") ? "That handle is already taken" : e.message),
+  });
+
+  return (
+    <section className="rounded-xl border border-border p-5">
+      <h2 className="font-semibold text-foreground">Channel settings</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="cname">Display name</Label>
+          <Input id="cname" className="mt-1.5" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+        </div>
+        <div>
+          <Label htmlFor="chandle">Handle</Label>
+          <Input
+            id="chandle"
+            className="mt-1.5"
+            value={handle}
+            onChange={(e) => setHandle(e.target.value)}
+            placeholder="yourchannel"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <Label htmlFor="cbio">About</Label>
+          <Textarea
+            id="cbio"
+            rows={3}
+            className="mt-1.5"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Tell viewers about your channel"
+          />
+        </div>
+        <ImageUploadField userId={userId} label="Avatar" value={avatar} onUploaded={setAvatar} />
+        <ImageUploadField userId={userId} label="Banner" value={banner} onUploaded={setBanner} />
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+          Save channel
+        </Button>
+        {profile ? (
+          <Link
+            to="/channel/$handle"
+            params={{ handle: profile.handle }}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            View public page
+          </Link>
+        ) : null}
+      </div>
+    </section>
   );
 }
