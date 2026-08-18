@@ -127,8 +127,8 @@ function WatchPage() {
           <div className="overflow-hidden rounded-xl bg-black">
             <video
               key={video.id}
-              src={video.video_url}
-              poster={video.thumbnail_url ?? undefined}
+              src={playbackUrl ?? undefined}
+              poster={posterUrl ?? undefined}
               controls
               autoPlay
               className="aspect-video w-full"
