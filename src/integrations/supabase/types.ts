@@ -62,6 +62,7 @@ export type Database = {
           display_name: string
           handle: string
           id: string
+          links: Json
         }
         Insert: {
           avatar_url?: string | null
@@ -71,6 +72,7 @@ export type Database = {
           display_name: string
           handle: string
           id: string
+          links?: Json
         }
         Update: {
           avatar_url?: string | null
@@ -80,6 +82,7 @@ export type Database = {
           display_name?: string
           handle?: string
           id?: string
+          links?: Json
         }
         Relationships: []
       }
@@ -163,6 +166,7 @@ export type Database = {
           duration_seconds: number
           id: string
           is_public: boolean
+          is_short: boolean
           owner_id: string
           thumbnail_url: string | null
           title: string
@@ -176,6 +180,7 @@ export type Database = {
           duration_seconds?: number
           id?: string
           is_public?: boolean
+          is_short?: boolean
           owner_id: string
           thumbnail_url?: string | null
           title: string
@@ -189,6 +194,7 @@ export type Database = {
           duration_seconds?: number
           id?: string
           is_public?: boolean
+          is_short?: boolean
           owner_id?: string
           thumbnail_url?: string | null
           title?: string
