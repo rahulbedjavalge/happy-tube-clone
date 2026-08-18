@@ -3,7 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { ShortCard, VideoGrid } from "@/components/VideoCard";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCount, initials } from "@/lib/format";
@@ -97,7 +98,7 @@ function ChannelPage() {
 
       <div className="mt-4 flex flex-wrap items-center gap-4">
         <Avatar className="size-20">
-          <AvatarImage src={avatarUrl ?? undefined} alt="" />
+          <MediaAvatarImage src={avatarUrl} />
           <AvatarFallback className="text-2xl">{initials(channel.display_name)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">

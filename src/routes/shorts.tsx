@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCount, formatViews, initials } from "@/lib/format";
@@ -148,7 +149,7 @@ function ShortItem({
               className="flex items-center gap-2"
             >
               <Avatar className="size-8">
-                <AvatarImage src={video.owner?.avatar_url ?? undefined} alt="" />
+                <MediaAvatarImage src={video.owner?.avatar_url} />
                 <AvatarFallback>{initials(video.owner?.display_name ?? "?")}</AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium text-white">{video.owner?.display_name}</span>

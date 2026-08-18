@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -147,7 +148,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             <DropdownMenuTrigger asChild>
               <button aria-label="Account menu" className="ml-1 rounded-full">
                 <Avatar className="size-8">
-                  <AvatarImage src={profile?.avatar_url ?? undefined} alt="" />
+                  <MediaAvatarImage src={profile?.avatar_url} />
                   <AvatarFallback>{initials(profile?.display_name ?? user.email ?? "U")}</AvatarFallback>
                 </Avatar>
               </button>

@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { VideoGrid } from "@/components/VideoCard";
 import { RequireAuth } from "@/components/RequireAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { initials } from "@/lib/format";
 import { fetchSubscribedChannels, fetchSubscriptionFeed } from "@/lib/queries";
@@ -54,7 +55,7 @@ function SubscriptionsFeed() {
               className="flex w-20 flex-col items-center gap-2 text-center"
             >
               <Avatar className="size-14">
-                <AvatarImage src={c.avatar_url ?? undefined} alt="" />
+                <MediaAvatarImage src={c.avatar_url} />
                 <AvatarFallback>{initials(c.display_name)}</AvatarFallback>
               </Avatar>
               <span className="line-clamp-1 text-xs text-muted-foreground">{c.display_name}</span>

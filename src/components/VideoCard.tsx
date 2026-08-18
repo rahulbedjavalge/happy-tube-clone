@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { Video } from "@/lib/queries";
 import { formatDuration, formatViews, initials, timeAgo } from "@/lib/format";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { cn } from "@/lib/utils";
 import { useMediaUrl } from "@/lib/storage";
 
@@ -38,7 +39,7 @@ export function VideoCard({ video }: { video: Video }) {
           aria-label={video.owner?.display_name ?? "Channel"}
         >
           <Avatar className="size-9">
-            <AvatarImage src={video.owner?.avatar_url ?? undefined} alt="" />
+            <MediaAvatarImage src={video.owner?.avatar_url} />
             <AvatarFallback>{initials(video.owner?.display_name ?? "?")}</AvatarFallback>
           </Avatar>
         </Link>
