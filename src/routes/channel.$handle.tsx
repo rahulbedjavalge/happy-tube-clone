@@ -17,20 +17,57 @@ import {
 } from "@/lib/queries";
 import { useMediaUrl } from "@/lib/storage";
 
+import { getPublicChannel } from "@/lib/channels.functions";
+
 export const Route = createFileRoute("/channel/$handle")({
-  head: () => ({
-    meta: [
-      { title: "Channel on Streamly" },
-      { name: "description", content: "Browse every video from this Streamly channel and subscribe for new uploads." },
-      { property: "og:title", content: "Channel on Streamly" },
-      { property: "og:description", content: "Browse every video from this channel and subscribe for new uploads." },
-    ],
-  }),
+  loader: ({ params }) => getPublicChannel({ data: { handle: params.handle } }),
+  head: ({ loaderData, params }) => {
+    if (!loaderData) {
+      return {
+        meta: [
+          { title: "Channel not found — Streamly" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
+    }
+    const title = `${loaderData.display_name} (@${loaderData.handle}) — Streamly`;
+    const description =
+      loaderData.description?.slice(0, 155) ||
+      `Watch videos and Shorts from ${loaderData.display_name} on Streamly. ${loaderData.videos} videos.`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "profile" },
+        { name: "twitter:card", content: "summary_large_image" },
+        ...(loaderData.avatar_url?.startsWith("http")
+          ? [
+              { property: "og:image", content: loaderData.avatar_url },
+              { name: "twitter:image", content: loaderData.avatar_url },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: `/channel/${params.handle}` }],
+    };
+  },
+  errorComponent: () => (
+    <AppShell>
+      <p className="py-20 text-center text-muted-foreground">Couldn't load this channel. Try again later.</p>
+    </AppShell>
+  ),
+  notFoundComponent: () => (
+    <AppShell>
+      <p className="py-20 text-center text-muted-foreground">Channel not found.</p>
+    </AppShell>
+  ),
   component: ChannelPage,
 });
 
 function ChannelPage() {
   const { handle } = Route.useParams();
+  const publicChannel = Route.useLoaderData();
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -38,12 +75,14 @@ function ChannelPage() {
   const { data: channel, isLoading } = useQuery({
     queryKey: ["channel", handle],
     queryFn: () => fetchChannelByHandle(handle),
+    initialData: publicChannel ? (publicChannel as unknown as Awaited<ReturnType<typeof fetchChannelByHandle>>) : undefined,
   });
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", channel?.id],
     queryFn: () => fetchChannelVideos(channel!.id),
     enabled: Boolean(channel?.id),
   });
+
   const { data: subCount } = useQuery({
     queryKey: ["subcount", channel?.id],
     queryFn: () => fetchSubscriberCount(channel!.id),
