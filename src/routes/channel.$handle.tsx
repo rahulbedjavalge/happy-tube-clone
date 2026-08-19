@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { ShortCard, VideoGrid } from "@/components/VideoCard";
@@ -143,18 +143,26 @@ function ChannelPage() {
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-foreground">{channel.display_name}</h1>
           <p className="text-sm text-muted-foreground">
-            @{channel.handle} · {formatCount(subCount ?? 0)} subscribers · {videos?.length ?? 0} videos
+            @{channel.handle} · {formatCount(subCount ?? publicChannel?.subscribers ?? 0)} subscribers ·{" "}
+            {videos?.length ?? publicChannel?.videos ?? 0} videos
           </p>
+
         </div>
-        {user?.id !== channel.id ? (
+        {user?.id === channel.id ? null : user ? (
           <Button
             className="rounded-full"
             variant={subscribed ? "secondary" : "default"}
+            disabled={subMutation.isPending}
             onClick={() => subMutation.mutate()}
           >
-            {subscribed ? "Subscribed" : "Subscribe"}
+            {subMutation.isPending ? "…" : subscribed ? "Subscribed" : "Subscribe"}
           </Button>
-        ) : null}
+        ) : (
+          <Button asChild className="rounded-full">
+            <Link to="/auth">Subscribe</Link>
+          </Button>
+        )}
+
       </div>
 
       <Tabs defaultValue="videos" className="mt-6">
