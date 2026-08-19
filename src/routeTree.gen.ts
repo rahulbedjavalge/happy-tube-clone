@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ChannelsRouteImport } from './routes/channels'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LikedRouteImport } from './routes/liked'
 import { Route as ResultsRouteImport } from './routes/results'
@@ -28,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChannelsRoute = ChannelsRouteImport.update({
+  id: '/channels',
+  path: '/channels',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -74,6 +80,7 @@ const WatchIdRoute = WatchIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channels': typeof ChannelsRoute
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channels': typeof ChannelsRoute
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/channels': typeof ChannelsRoute
   '/history': typeof HistoryRoute
   '/liked': typeof LikedRoute
   '/results': typeof ResultsRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/channels'
     | '/history'
     | '/liked'
     | '/results'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/channels'
     | '/history'
     | '/liked'
     | '/results'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/channels'
     | '/history'
     | '/liked'
     | '/results'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ChannelsRoute: typeof ChannelsRoute
   HistoryRoute: typeof HistoryRoute
   LikedRoute: typeof LikedRoute
   ResultsRoute: typeof ResultsRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/channels': {
+      id: '/channels'
+      path: '/channels'
+      fullPath: '/channels'
+      preLoaderRoute: typeof ChannelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -238,6 +258,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ChannelsRoute: ChannelsRoute,
   HistoryRoute: HistoryRoute,
   LikedRoute: LikedRoute,
   ResultsRoute: ResultsRoute,

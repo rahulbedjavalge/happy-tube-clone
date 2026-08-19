@@ -65,7 +65,9 @@ const navItems = [
   { to: "/subscriptions", label: "Subscriptions", icon: ListVideo },
   { to: "/history", label: "History", icon: History },
   { to: "/liked", label: "Liked videos", icon: ThumbsUp },
+  { to: "/channels", label: "Channels", icon: Users },
   { to: "/studio", label: "Your studio", icon: Upload },
+
 ] as const;
 
 function SidebarNav({ collapsed }: { collapsed: boolean }) {
