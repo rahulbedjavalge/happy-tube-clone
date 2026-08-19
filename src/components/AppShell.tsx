@@ -14,6 +14,7 @@ import {
   User as UserIcon,
   Play,
   Clapperboard,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,7 +66,9 @@ const navItems = [
   { to: "/subscriptions", label: "Subscriptions", icon: ListVideo },
   { to: "/history", label: "History", icon: History },
   { to: "/liked", label: "Liked videos", icon: ThumbsUp },
+  { to: "/channels", label: "Channels", icon: Users },
   { to: "/studio", label: "Your studio", icon: Upload },
+
 ] as const;
 
 function SidebarNav({ collapsed }: { collapsed: boolean }) {
