@@ -143,8 +143,10 @@ function ChannelPage() {
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-foreground">{channel.display_name}</h1>
           <p className="text-sm text-muted-foreground">
-            @{channel.handle} · {formatCount(subCount ?? 0)} subscribers · {videos?.length ?? 0} videos
+            @{channel.handle} · {formatCount(subCount ?? publicChannel?.subscribers ?? 0)} subscribers ·{" "}
+            {videos?.length ?? publicChannel?.videos ?? 0} videos
           </p>
+
         </div>
         {user?.id === channel.id ? null : user ? (
           <Button
