@@ -215,7 +215,17 @@ export async function setLike(videoId: string, userId: string, value: number) {
   if (error) throw error;
 }
 
+/** Counts one real view per video per browser session (no inflated/demo counts). */
 export async function recordView(videoId: string) {
+  if (typeof window !== "undefined") {
+    const key = `viewed:${videoId}`;
+    try {
+      if (window.sessionStorage.getItem(key)) return;
+      window.sessionStorage.setItem(key, "1");
+    } catch {
+      /* storage unavailable — still count once per call */
+    }
+  }
   await supabase.rpc("increment_video_views", { _video_id: videoId });
 }
 
