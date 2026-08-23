@@ -1,0 +1,6 @@
+---
+name: YouTube-red visual theme
+description: Streamly should use a YouTube-like red accent with neutral black, white, and gray surfaces.
+type: design
+---
+Use a YouTube-like red as the primary branded/action color across light and dark themes. Keep surfaces neutral black, white, and gray rather than tinting the whole interface red.
