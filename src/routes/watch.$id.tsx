@@ -129,7 +129,7 @@ function WatchPage() {
     },
     onSuccess: () => {
       setComment("");
-      toast.success("Comment submitted — visible once the creator approves it");
+      toast.success("Comment posted");
       qc.invalidateQueries({ queryKey: ["comments", id] });
     },
     onError: () => navigate({ to: "/auth" }),
