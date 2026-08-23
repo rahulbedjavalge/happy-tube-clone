@@ -289,7 +289,7 @@ function WatchPage() {
                       <span className="font-normal text-muted-foreground">{timeAgo(c.created_at)}</span>
                       {!c.approved ? (
                         <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-normal text-muted-foreground">
-                          Pending review
+                          Hidden by creator
                         </span>
                       ) : null}
                     </p>
