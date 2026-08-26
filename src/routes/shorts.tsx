@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Heart, MessageCircle, Volume2, VolumeX } from "lucide-react";
+import { Heart, MessageCircle, Share2, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
+import { ShareDialog } from "@/components/ShareDialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,7 @@ function ShortItem({
   const src = useMediaUrl(video.video_url);
   const poster = useMediaUrl(video.thumbnail_url);
   const [active, setActive] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const { data: likes } = useQuery({
     queryKey: ["likes", video.id, user?.id],
@@ -179,6 +181,21 @@ function ShortItem({
             </span>
             <span className="text-xs">Comments</span>
           </Link>
+          <button
+            className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground"
+            onClick={() => setShareOpen(true)}
+          >
+            <span className="flex size-11 items-center justify-center rounded-full bg-secondary">
+              <Share2 className="size-5" />
+            </span>
+            <span className="text-xs">Share</span>
+          </button>
+          <ShareDialog
+            open={shareOpen}
+            onOpenChange={setShareOpen}
+            video={{ id: video.id, title: video.title, is_short: true }}
+            title="Share this Short"
+          />
           <span className="sr-only">{active ? "Playing" : "Paused"}</span>
         </div>
       </div>

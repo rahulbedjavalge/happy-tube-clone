@@ -316,8 +316,13 @@ export type VideoInput = {
 };
 
 export async function createVideo(ownerId: string, input: VideoInput) {
-  const { error } = await supabase.from("videos").insert({ ...input, owner_id: ownerId });
+  const { data, error } = await supabase
+    .from("videos")
+    .insert({ ...input, owner_id: ownerId })
+    .select("id")
+    .single();
   if (error) throw error;
+  return data;
 }
 
 export async function updateVideo(id: string, input: Partial<VideoInput>) {

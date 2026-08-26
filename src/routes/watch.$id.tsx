@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { ShareButton } from "@/components/ShareDialog";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { VideoRow } from "@/components/VideoCard";
@@ -225,16 +226,7 @@ function WatchPage() {
                   <ThumbsDown className="size-4" />
                 </button>
               </div>
-              <Button
-                variant="secondary"
-                className="rounded-full"
-                onClick={() => {
-                  void navigator.clipboard.writeText(window.location.href);
-                  toast.success("Link copied");
-                }}
-              >
-                <Share2 className="mr-2 size-4" /> Share
-              </Button>
+              <ShareButton video={video} className="rounded-full" />
             </div>
           </div>
 

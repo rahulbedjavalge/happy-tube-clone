@@ -8,6 +8,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { Thumbnail } from "@/components/VideoCard";
 import { ImageUploadField, VideoUploadField } from "@/components/UploadFields";
 import { StudioDashboard } from "@/components/StudioDashboard";
+import { ShareButton, ShareDialog } from "@/components/ShareDialog";
 import { CommentModeration } from "@/components/CommentModeration";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,6 +79,7 @@ function Studio() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState<VideoInput>(emptyInput);
+  const [shareVideo, setShareVideo] = useState<{ id: string; title: string; is_short: boolean } | null>(null);
 
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", user?.id],
@@ -90,11 +92,16 @@ function Studio() {
       if (form.is_short && form.duration_seconds > SHORT_MAX_SECONDS)
         throw new Error("Shorts can be at most 60 seconds long");
       const payload = { ...form, thumbnail_url: form.thumbnail_url || null };
-      if (editing) await updateVideo(editing.id, payload);
-      else await createVideo(user!.id, payload);
+      if (editing) {
+        await updateVideo(editing.id, payload);
+        return null;
+      }
+      const created = await createVideo(user!.id, payload);
+      return { id: created.id, title: form.title, is_short: form.is_short };
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       toast.success(editing ? "Video updated" : "Video published");
+      if (created) setShareVideo(created);
       setOpen(false);
       setEditing(null);
       setForm(emptyInput);
@@ -170,6 +177,7 @@ function Studio() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <ShareButton video={v} variant="secondary" label={null} className="h-9 px-3" />
                 <Button variant="secondary" size="sm" asChild>
                   <Link to="/watch/$id" params={{ id: v.id }} title="View analytics">
                     <BarChart3 className="size-4" />
@@ -323,6 +331,20 @@ function Studio() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {shareVideo ? (
+        <ShareDialog
+          open={Boolean(shareVideo)}
+          onOpenChange={(o) => !o && setShareVideo(null)}
+          video={shareVideo}
+          title="Your video is live — share it"
+          description={
+            shareVideo.is_short
+              ? "Copy the link below or send your Short straight to friends."
+              : "Copy the link below or send your video straight to friends."
+          }
+        />
+      ) : null}
     </div>
   );
 }
