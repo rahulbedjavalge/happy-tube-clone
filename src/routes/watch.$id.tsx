@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ThumbsUp, ThumbsDown, Share2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { ShareButton } from "@/components/ShareDialog";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { VideoRow } from "@/components/VideoCard";
