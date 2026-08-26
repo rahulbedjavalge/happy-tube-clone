@@ -225,16 +225,7 @@ function WatchPage() {
                   <ThumbsDown className="size-4" />
                 </button>
               </div>
-              <Button
-                variant="secondary"
-                className="rounded-full"
-                onClick={() => {
-                  void navigator.clipboard.writeText(window.location.href);
-                  toast.success("Link copied");
-                }}
-              >
-                <Share2 className="mr-2 size-4" /> Share
-              </Button>
+              <ShareButton video={video} className="rounded-full" />
             </div>
           </div>
 
