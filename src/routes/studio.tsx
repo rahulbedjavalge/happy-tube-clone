@@ -177,7 +177,7 @@ function Studio() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <ShareButton video={v} variant="secondary" label={null} />
+                <ShareButton video={v} variant="secondary" label={null} className="h-9 px-3" />
                 <Button variant="secondary" size="sm" asChild>
                   <Link to="/watch/$id" params={{ id: v.id }} title="View analytics">
                     <BarChart3 className="size-4" />
