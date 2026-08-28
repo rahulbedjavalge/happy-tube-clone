@@ -26,8 +26,8 @@ export const Route = createFileRoute("/shorts")({
   }),
   loaderDeps: ({ search }) => ({ v: search.v }),
   loader: ({ deps }) => (deps.v ? getPublicVideoMeta({ data: { id: deps.v } }) : null),
-  head: ({ deps, loaderData }) => {
-    const url = deps.v ? `${SITE}/shorts?v=${deps.v}` : `${SITE}/shorts`;
+  head: ({ loaderData }) => {
+    const url = loaderData ? `${SITE}/shorts?v=${loaderData.id}` : `${SITE}/shorts`;
     const title = loaderData ? `${loaderData.title} — Streamly Shorts` : "Shorts — quick vertical videos on Streamly";
     const description =
       loaderData?.description?.slice(0, 155) ||
