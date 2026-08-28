@@ -13,6 +13,14 @@ import {
 
 const FALLBACK_ORIGIN = "https://u-tubee.lovable.app";
 
+const RATIOS = [
+  { id: "16:9", label: "16:9 — landscape", w: 16, h: 9, width: 560 },
+  { id: "9:16", label: "9:16 — vertical", w: 9, h: 16, width: 360 },
+  { id: "1:1", label: "1:1 — square", w: 1, h: 1, width: 480 },
+  { id: "4:3", label: "4:3 — classic", w: 4, h: 3, width: 560 },
+] as const;
+
+
 export function shareUrlFor(video: { id: string; is_short?: boolean }): string {
   const origin = typeof window !== "undefined" ? window.location.origin : FALLBACK_ORIGIN;
   return video.is_short ? `${origin}/shorts?v=${video.id}` : `${origin}/watch/${video.id}`;
@@ -32,8 +40,13 @@ export function ShareDialog({
   description?: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const [ratioId, setRatioId] = useState(video.is_short ? "9:16" : "16:9");
+  const [widthInput, setWidthInput] = useState(video.is_short ? "360" : "560");
+  const [autoplay, setAutoplay] = useState(false);
+  const [loop, setLoop] = useState(false);
   const url = useMemo(() => (open ? shareUrlFor(video) : ""), [open, video]);
   const text = `Watch “${video.title}” on Streamly`;
+
 
   useEffect(() => {
     if (!open) setCopied(false);
@@ -84,7 +97,16 @@ export function ShareDialog({
     },
   ];
 
-  const embed = `<iframe src="${url}" width="560" height="315" frameborder="0" allowfullscreen title="${video.title}"></iframe>`;
+  const ratio = RATIOS.find((r) => r.id === ratioId) ?? RATIOS[0]!;
+  const width = Math.max(120, Math.min(1920, Number(widthInput) || ratio.width));
+  const height = Math.round(width * (ratio.h / ratio.w));
+  const embedSrc = `${url.replace(/\/watch\/|\/shorts\?v=/, "/embed/")}${
+    [autoplay ? "autoplay=1&muted=1" : "", loop ? "loop=1" : ""].filter(Boolean).join("&")
+      ? `?${[autoplay ? "autoplay=1&muted=1" : "", loop ? "loop=1" : ""].filter(Boolean).join("&")}`
+      : ""
+  }`;
+  const embed = `<iframe src="${embedSrc}" width="${width}" height="${height}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${video.title}"></iframe>`;
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

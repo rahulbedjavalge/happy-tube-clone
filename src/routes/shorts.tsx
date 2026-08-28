@@ -13,28 +13,52 @@ import { formatCount, formatViews, initials } from "@/lib/format";
 import { fetchLikes, fetchShorts, recordView, setLike, type Video } from "@/lib/queries";
 import { useMediaUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import { getPublicVideoMeta } from "@/lib/video-meta.functions";
+
 
 type ShortsSearch = { v?: string | undefined };
+
+const SITE = "https://u-tubee.lovable.app";
 
 export const Route = createFileRoute("/shorts")({
   validateSearch: (search: Record<string, unknown>): ShortsSearch => ({
     v: typeof search['v'] === "string" ? (search['v'] as string) : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "Shorts — quick vertical videos on Streamly" },
-      {
-        name: "description",
-        content: "Swipe through short vertical videos from Streamly creators — under a minute each, autoplaying one after another.",
-      },
-      { property: "og:title", content: "Shorts — quick vertical videos on Streamly" },
-      { property: "og:description", content: "Swipe through short vertical videos from Streamly creators." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  loaderDeps: ({ search }) => ({ v: search.v }),
+  loader: ({ deps }) => (deps.v ? getPublicVideoMeta({ data: { id: deps.v } }) : null),
+  head: ({ loaderData }) => {
+    const url = loaderData ? `${SITE}/shorts?v=${loaderData.id}` : `${SITE}/shorts`;
+    const title = loaderData ? `${loaderData.title} — Streamly Shorts` : "Shorts — quick vertical videos on Streamly";
+    const description =
+      loaderData?.description?.slice(0, 155) ||
+      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Streamly Shorts.` : null) ||
+      "Swipe through short vertical videos from Streamly creators — under a minute each, autoplaying one after another.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: loaderData ? "video.other" : "website" },
+        { property: "og:url", content: url },
+        { property: "og:site_name", content: "Streamly" },
+        { name: "twitter:card", content: loaderData?.image ? "summary_large_image" : "summary" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(loaderData?.image
+          ? [
+              { property: "og:image", content: loaderData.image },
+              { property: "og:image:alt", content: loaderData.title },
+              { name: "twitter:image", content: loaderData.image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: ShortsPage,
 });
+
 
 function ShortsPage() {
   const { v } = Route.useSearch();
