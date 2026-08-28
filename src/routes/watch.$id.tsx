@@ -30,18 +30,46 @@ import {
   toggleSubscription,
 } from "@/lib/queries";
 import { cn } from "@/lib/utils";
+import { getPublicVideoMeta } from "@/lib/video-meta.functions";
+
+
+const SITE = "https://u-tubee.lovable.app";
 
 export const Route = createFileRoute("/watch/$id")({
-  head: () => ({
-    meta: [
-      { title: "Watch on Streamly" },
-      { name: "description", content: "Play the video, join the conversation and discover related channels on Streamly." },
-      { property: "og:title", content: "Watch on Streamly" },
-      { property: "og:description", content: "Play the video, join the conversation and discover related channels." },
-    ],
-  }),
+  loader: ({ params }) => getPublicVideoMeta({ data: { id: params.id } }),
+  head: ({ params, loaderData }) => {
+    const url = `${SITE}/watch/${params.id}`;
+    const title = loaderData ? `${loaderData.title} — Streamly` : "Watch on Streamly";
+    const description =
+      loaderData?.description?.slice(0, 155) ||
+      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Streamly.` : null) ||
+      "Play the video, join the conversation and discover related channels on Streamly.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "video.other" },
+        { property: "og:url", content: url },
+        { property: "og:site_name", content: "Streamly" },
+        { name: "twitter:card", content: loaderData?.image ? "summary_large_image" : "summary" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(loaderData?.image
+          ? [
+              { property: "og:image", content: loaderData.image },
+              { property: "og:image:alt", content: loaderData.title },
+              { name: "twitter:image", content: loaderData.image },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: WatchPage,
 });
+
 
 function WatchPage() {
   const { id } = Route.useParams();
