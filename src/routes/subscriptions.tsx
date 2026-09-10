@@ -12,9 +12,9 @@ import { fetchSubscribedChannels, fetchSubscriptionFeed } from "@/lib/queries";
 export const Route = createFileRoute("/subscriptions")({
   head: () => ({
     meta: [
-      { title: "Subscriptions — Streamly" },
-      { name: "description", content: "The newest uploads from every Streamly channel you subscribe to." },
-      { property: "og:title", content: "Subscriptions — Streamly" },
+      { title: "Subscriptions — Happy Tube Clone" },
+      { name: "description", content: "The newest uploads from every Happy Tube Clone channel you subscribe to." },
+      { property: "og:title", content: "Subscriptions — Happy Tube Clone" },
       { property: "og:description", content: "The newest uploads from every channel you subscribe to." },
     ],
   }),

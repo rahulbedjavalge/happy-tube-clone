@@ -17,8 +17,8 @@ export const Route = createFileRoute("/embed/$id")({
   }),
   head: () => ({
     meta: [
-      { title: "Streamly embedded player" },
-      { name: "description", content: "Embedded Streamly video player." },
+      { title: "Happy Tube Clone embedded player" },
+      { name: "description", content: "Embedded Happy Tube Clone video player." },
       { name: "robots", content: "noindex" },
     ],
   }),

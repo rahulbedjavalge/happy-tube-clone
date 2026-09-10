@@ -18,7 +18,7 @@ import { getPublicVideoMeta } from "@/lib/video-meta.functions";
 
 type ShortsSearch = { v?: string | undefined };
 
-const SITE = "https://u-tubee.lovable.app";
+const SITE = "https://happy-tube-clone.lovable.app";
 
 export const Route = createFileRoute("/shorts")({
   validateSearch: (search: Record<string, unknown>): ShortsSearch => ({
@@ -28,11 +28,11 @@ export const Route = createFileRoute("/shorts")({
   loader: ({ deps }) => (deps.v ? getPublicVideoMeta({ data: { id: deps.v } }) : null),
   head: ({ loaderData }) => {
     const url = loaderData ? `${SITE}/shorts?v=${loaderData.id}` : `${SITE}/shorts`;
-    const title = loaderData ? `${loaderData.title} — Streamly Shorts` : "Shorts — quick vertical videos on Streamly";
+    const title = loaderData ? `${loaderData.title} — Happy Tube Clone Shorts` : "Shorts — quick vertical videos on Happy Tube Clone";
     const description =
       loaderData?.description?.slice(0, 155) ||
-      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Streamly Shorts.` : null) ||
-      "Swipe through short vertical videos from Streamly creators — under a minute each, autoplaying one after another.";
+      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Happy Tube Clone Shorts.` : null) ||
+      "Swipe through short vertical videos from Happy Tube Clone creators — under a minute each, autoplaying one after another.";
     return {
       meta: [
         { title },
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/shorts")({
         { property: "og:description", content: description },
         { property: "og:type", content: loaderData ? "video.other" : "website" },
         { property: "og:url", content: url },
-        { property: "og:site_name", content: "Streamly" },
+        { property: "og:site_name", content: "Happy Tube Clone" },
         { name: "twitter:card", content: loaderData?.image ? "summary_large_image" : "summary" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
@@ -75,7 +75,7 @@ function ShortsPage() {
 
   return (
     <AppShell wide>
-      <h1 className="sr-only">Streamly Shorts</h1>
+      <h1 className="sr-only">Happy Tube Clone Shorts</h1>
       {isLoading ? (
         <div className="mx-auto aspect-[9/16] w-full max-w-[420px] animate-pulse rounded-2xl bg-muted" />
       ) : shorts.length === 0 ? (

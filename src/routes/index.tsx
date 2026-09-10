@@ -9,12 +9,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Streamly — Watch trending videos and shorts" },
+      { title: "Happy Tube Clone — Watch trending videos and shorts" },
       {
         name: "description",
-        content: "Stream films, animation, tech and travel videos, follow channels and share your own uploads on Streamly.",
+        content: "Stream films, animation, tech and travel videos, follow channels and share your own uploads on Happy Tube Clone.",
       },
-      { property: "og:title", content: "Streamly — Watch trending videos and shorts" },
+      { property: "og:title", content: "Happy Tube Clone — Watch trending videos and shorts" },
       {
         property: "og:description",
         content: "Stream films, animation, tech and travel videos, follow channels and share your own uploads.",
@@ -34,7 +34,7 @@ function Index() {
 
   return (
     <AppShell>
-      <h1 className="sr-only">Streamly home feed</h1>
+      <h1 className="sr-only">Happy Tube Clone home feed</h1>
       <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
         {CATEGORIES.map((c) => (
           <button

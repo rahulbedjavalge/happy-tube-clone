@@ -5,8 +5,8 @@ import { MediaAvatarImage } from "@/components/MediaAvatar";
 import { formatCount, initials } from "@/lib/format";
 import { listPublicChannels } from "@/lib/channels.functions";
 
-const TITLE = "Browse channels — Streamly";
-const DESCRIPTION = "Discover creators on Streamly: browse every public channel, see their about page, avatar and banner.";
+const TITLE = "Browse channels — Happy Tube Clone";
+const DESCRIPTION = "Discover creators on Happy Tube Clone: browse every public channel, see their about page, avatar and banner.";
 
 export const Route = createFileRoute("/channels")({
   loader: () => listPublicChannels(),
@@ -39,7 +39,7 @@ function ChannelsPage() {
   return (
     <AppShell>
       <h1 className="text-2xl font-bold text-foreground">Channels</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Every public channel on Streamly.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Every public channel on Happy Tube Clone.</p>
 
       {channels.length === 0 ? (
         <p className="py-20 text-center text-muted-foreground">No channels yet.</p>

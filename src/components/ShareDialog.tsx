@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const FALLBACK_ORIGIN = "https://u-tubee.lovable.app";
+const FALLBACK_ORIGIN = "https://happy-tube-clone.lovable.app";
 
 const RATIOS = [
   { id: "16:9", label: "16:9 — landscape", w: 16, h: 9, width: 560 },
@@ -45,7 +45,7 @@ export function ShareDialog({
   const [autoplay, setAutoplay] = useState(false);
   const [loop, setLoop] = useState(false);
   const url = useMemo(() => (open ? shareUrlFor(video) : ""), [open, video]);
-  const text = `Watch “${video.title}” on Streamly`;
+  const text = `Watch “${video.title}” on Happy Tube Clone`;
 
 
   useEffect(() => {
