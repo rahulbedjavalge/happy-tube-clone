@@ -116,7 +116,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
           <span className="flex size-7 items-center justify-center rounded-lg bg-primary">
             <Play className="size-4 fill-primary-foreground text-primary-foreground" />
           </span>
-          <span className="hidden text-lg font-bold tracking-tight text-foreground sm:inline">Streamly</span>
+          <span className="hidden text-lg font-bold tracking-tight text-foreground sm:inline">Happy Tube Clone</span>
         </Link>
 
         <form

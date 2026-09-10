@@ -9,9 +9,9 @@ import { fetchHistory } from "@/lib/queries";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Watch history — Streamly" },
-      { name: "description", content: "Revisit every video you have watched on Streamly, newest first." },
-      { property: "og:title", content: "Watch history — Streamly" },
+      { title: "Watch history — Happy Tube Clone" },
+      { name: "description", content: "Revisit every video you have watched on Happy Tube Clone, newest first." },
+      { property: "og:title", content: "Watch history — Happy Tube Clone" },
       { property: "og:description", content: "Revisit every video you have watched, newest first." },
     ],
   }),

@@ -25,15 +25,15 @@ export const Route = createFileRoute("/channel/$handle")({
     if (!loaderData) {
       return {
         meta: [
-          { title: "Channel not found — Streamly" },
+          { title: "Channel not found — Happy Tube Clone" },
           { name: "robots", content: "noindex" },
         ],
       };
     }
-    const title = `${loaderData.display_name} (@${loaderData.handle}) — Streamly`;
+    const title = `${loaderData.display_name} (@${loaderData.handle}) — Happy Tube Clone`;
     const description =
       loaderData.description?.slice(0, 155) ||
-      `Watch videos and Shorts from ${loaderData.display_name} on Streamly. ${loaderData.videos} videos.`;
+      `Watch videos and Shorts from ${loaderData.display_name} on Happy Tube Clone. ${loaderData.videos} videos.`;
     return {
       meta: [
         { title },

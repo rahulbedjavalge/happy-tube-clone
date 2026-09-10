@@ -41,9 +41,9 @@ import {
 export const Route = createFileRoute("/studio")({
   head: () => ({
     meta: [
-      { title: "Creator Studio — Streamly" },
-      { name: "description", content: "Upload videos and shorts, edit your uploads and manage your Streamly channel." },
-      { property: "og:title", content: "Creator Studio — Streamly" },
+      { title: "Creator Studio — Happy Tube Clone" },
+      { name: "description", content: "Upload videos and shorts, edit your uploads and manage your Happy Tube Clone channel." },
+      { property: "og:title", content: "Creator Studio — Happy Tube Clone" },
       { property: "og:description", content: "Upload videos and shorts, edit uploads and manage your channel." },
     ],
   }),

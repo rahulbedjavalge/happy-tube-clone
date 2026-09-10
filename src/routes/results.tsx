@@ -15,9 +15,9 @@ export const Route = createFileRoute("/results")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Search results — Streamly" },
-      { name: "description", content: "Find videos across every Streamly channel and sort by newest or most watched." },
-      { property: "og:title", content: "Search results — Streamly" },
+      { title: "Search results — Happy Tube Clone" },
+      { name: "description", content: "Find videos across every Happy Tube Clone channel and sort by newest or most watched." },
+      { property: "og:title", content: "Search results — Happy Tube Clone" },
       { property: "og:description", content: "Find videos across every channel and sort by newest or most watched." },
     ],
   }),

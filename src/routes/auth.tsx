@@ -13,9 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in to Streamly" },
-      { name: "description", content: "Create a Streamly account or sign in to comment, subscribe and publish videos." },
-      { property: "og:title", content: "Sign in to Streamly" },
+      { title: "Sign in to Happy Tube Clone" },
+      { name: "description", content: "Create a Happy Tube Clone account or sign in to comment, subscribe and publish videos." },
+      { property: "og:title", content: "Sign in to Happy Tube Clone" },
       { property: "og:description", content: "Create an account to comment, subscribe and publish videos." },
     ],
   }),
@@ -75,7 +75,7 @@ function AuthPage() {
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary">
             <Play className="size-4 fill-primary-foreground text-primary-foreground" />
           </span>
-          <span className="text-xl font-bold text-foreground">Streamly</span>
+          <span className="text-xl font-bold text-foreground">Happy Tube Clone</span>
         </Link>
 
         <div className="rounded-2xl border border-border bg-card p-6">

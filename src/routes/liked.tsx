@@ -9,9 +9,9 @@ import { fetchLikedVideos } from "@/lib/queries";
 export const Route = createFileRoute("/liked")({
   head: () => ({
     meta: [
-      { title: "Liked videos — Streamly" },
-      { name: "description", content: "Every video you have given a thumbs up on Streamly, in one place." },
-      { property: "og:title", content: "Liked videos — Streamly" },
+      { title: "Liked videos — Happy Tube Clone" },
+      { name: "description", content: "Every video you have given a thumbs up on Happy Tube Clone, in one place." },
+      { property: "og:title", content: "Liked videos — Happy Tube Clone" },
       { property: "og:description", content: "Every video you have given a thumbs up, in one place." },
     ],
   }),

@@ -33,17 +33,17 @@ import { cn } from "@/lib/utils";
 import { getPublicVideoMeta } from "@/lib/video-meta.functions";
 
 
-const SITE = "https://u-tubee.lovable.app";
+const SITE = "https://happy-tube-clone.lovable.app";
 
 export const Route = createFileRoute("/watch/$id")({
   loader: ({ params }) => getPublicVideoMeta({ data: { id: params.id } }),
   head: ({ params, loaderData }) => {
     const url = `${SITE}/watch/${params.id}`;
-    const title = loaderData ? `${loaderData.title} — Streamly` : "Watch on Streamly";
+    const title = loaderData ? `${loaderData.title} — Happy Tube Clone` : "Watch on Happy Tube Clone";
     const description =
       loaderData?.description?.slice(0, 155) ||
-      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Streamly.` : null) ||
-      "Play the video, join the conversation and discover related channels on Streamly.";
+      (loaderData?.channel ? `Watch “${loaderData.title}” from ${loaderData.channel} on Happy Tube Clone.` : null) ||
+      "Play the video, join the conversation and discover related channels on Happy Tube Clone.";
     return {
       meta: [
         { title },
@@ -52,7 +52,7 @@ export const Route = createFileRoute("/watch/$id")({
         { property: "og:description", content: description },
         { property: "og:type", content: "video.other" },
         { property: "og:url", content: url },
-        { property: "og:site_name", content: "Streamly" },
+        { property: "og:site_name", content: "Happy Tube Clone" },
         { name: "twitter:card", content: loaderData?.image ? "summary_large_image" : "summary" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
