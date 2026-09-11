@@ -39,6 +39,9 @@ import {
 } from "@/lib/queries";
 
 export const Route = createFileRoute("/studio")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    upload: search.upload === true || search.upload === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Creator Studio — Happy Tube Clone" },
