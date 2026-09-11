@@ -174,19 +174,7 @@ function Studio() {
       {tab === "settings" ? <ChannelSettings userId={user!.id} /> : null}
 
       <section className={cn(tab === "videos" ? "" : "hidden")}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
-          <Button
-            className="rounded-full"
-            onClick={() => {
-              setEditing(null);
-              setForm(emptyInput);
-              setOpen(true);
-            }}
-          >
-            <Plus className="mr-2 size-4" /> Upload
-          </Button>
-        </div>
+        <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
 
         <ul className="mt-5 space-y-4">
           {(videos ?? []).map((v) => (
