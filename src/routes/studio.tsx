@@ -39,6 +39,9 @@ import {
 } from "@/lib/queries";
 
 export const Route = createFileRoute("/studio")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    upload: search["upload"] === true || search["upload"] === "true",
+  }),
   head: () => ({
     meta: [
       { title: "Creator Studio — Happy Tube Clone" },
@@ -80,6 +83,21 @@ function Studio() {
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState<VideoInput>(emptyInput);
   const [shareVideo, setShareVideo] = useState<{ id: string; title: string; is_short: boolean } | null>(null);
+  const search = Route.useSearch();
+
+  useEffect(() => {
+    if (search.upload) {
+      setEditing(null);
+      setForm(emptyInput);
+      setOpen(true);
+    }
+  }, [search.upload]);
+
+  const openUpload = () => {
+    setEditing(null);
+    setForm(emptyInput);
+    setOpen(true);
+  };
 
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", user?.id],
@@ -131,39 +149,32 @@ function Studio() {
 
   return (
     <div className="mt-6 space-y-8">
-      <nav className="flex flex-wrap gap-2 border-b border-border pb-3">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "rounded-full px-4 py-1.5 text-sm",
-              tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-3">
+        <nav className="flex flex-wrap gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm",
+                tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+        <Button className="rounded-full" onClick={openUpload}>
+          <Plus className="mr-2 size-4" /> Upload
+        </Button>
+      </div>
 
       {tab === "dashboard" ? <StudioDashboard userId={user!.id} /> : null}
       {tab === "comments" ? <CommentModeration userId={user!.id} /> : null}
       {tab === "settings" ? <ChannelSettings userId={user!.id} /> : null}
 
       <section className={cn(tab === "videos" ? "" : "hidden")}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
-          <Button
-            className="rounded-full"
-            onClick={() => {
-              setEditing(null);
-              setForm(emptyInput);
-              setOpen(true);
-            }}
-          >
-            <Plus className="mr-2 size-4" /> Upload
-          </Button>
-        </div>
+        <h2 className="font-semibold text-foreground">Your videos ({videos?.length ?? 0})</h2>
 
         <ul className="mt-5 space-y-4">
           {(videos ?? []).map((v) => (
