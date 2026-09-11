@@ -149,20 +149,25 @@ function Studio() {
 
   return (
     <div className="mt-6 space-y-8">
-      <nav className="flex flex-wrap gap-2 border-b border-border pb-3">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "rounded-full px-4 py-1.5 text-sm",
-              tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-3">
+        <nav className="flex flex-wrap gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm",
+                tab === t.id ? "bg-foreground text-background" : "bg-secondary text-foreground hover:bg-accent",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+        <Button className="rounded-full" onClick={openUpload}>
+          <Plus className="mr-2 size-4" /> Upload
+        </Button>
+      </div>
 
       {tab === "dashboard" ? <StudioDashboard userId={user!.id} /> : null}
       {tab === "comments" ? <CommentModeration userId={user!.id} /> : null}
