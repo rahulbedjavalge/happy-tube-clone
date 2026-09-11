@@ -13,6 +13,7 @@ import {
   LogOut,
   User as UserIcon,
   Play,
+  Plus,
   Clapperboard,
   Users,
 } from "lucide-react";
@@ -147,6 +148,14 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
         <ThemeToggle />
 
         {user ? (
+          <Button asChild variant="outline" className="ml-1 hidden rounded-full sm:inline-flex">
+            <Link to="/studio" search={{ upload: true }}>
+              <Plus className="mr-1.5 size-4" /> Upload
+            </Link>
+          </Button>
+        ) : null}
+
+        {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button aria-label="Account menu" className="ml-1 rounded-full">
@@ -163,7 +172,12 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/studio">
+                <Link to="/studio" search={{ upload: true }}>
+                  <Plus className="mr-2 size-4" /> Upload video
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/studio" search={{ upload: false }}>
                   <Upload className="mr-2 size-4" /> Studio
                 </Link>
               </DropdownMenuItem>
