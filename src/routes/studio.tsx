@@ -40,7 +40,7 @@ import {
 
 export const Route = createFileRoute("/studio")({
   validateSearch: (search: Record<string, unknown>) => ({
-    upload: search.upload === true || search.upload === "true",
+    upload: search["upload"] === true || search["upload"] === "true",
   }),
   head: () => ({
     meta: [
