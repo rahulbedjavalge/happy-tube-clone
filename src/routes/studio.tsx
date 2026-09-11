@@ -83,6 +83,21 @@ function Studio() {
   const [editing, setEditing] = useState<Video | null>(null);
   const [form, setForm] = useState<VideoInput>(emptyInput);
   const [shareVideo, setShareVideo] = useState<{ id: string; title: string; is_short: boolean } | null>(null);
+  const search = Route.useSearch();
+
+  useEffect(() => {
+    if (search.upload) {
+      setEditing(null);
+      setForm(emptyInput);
+      setOpen(true);
+    }
+  }, [search.upload]);
+
+  const openUpload = () => {
+    setEditing(null);
+    setForm(emptyInput);
+    setOpen(true);
+  };
 
   const { data: videos } = useQuery({
     queryKey: ["channel-videos", user?.id],
